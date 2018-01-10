@@ -1,0 +1,13 @@
+﻿ID,Type,MP,description,name
+1,1,3,Inflicts high damage to one foe,Giant Slice
+2,1,8,Drain health from the enemy,The tooth of vampire
+3,1,15,Ingored the enemy defense,Artemis's Arrows
+4,1,2,Inflicts damage to one foe with coins,Coin
+5,1,20,Kill the enemy with one hit,Lai Strike
+6,1,7,An attack with high critical hit chance,Target on
+7,2,30,Restores HP,God blessing
+8,2,10,Become as quality as ASUS for 2 rounds,ASUSlized
+9,2,15,Decrease one foe's ATK for 2 turns,Psycho Blast
+10,2,4,Summon a big fire ball to swallow your enemy,Fireball
+11,2,0,Restores MP,Meditation
+12,1,5,"Make the enemy Poisoned,can be stack",Poison string

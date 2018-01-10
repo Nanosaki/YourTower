@@ -48,7 +48,7 @@ struct info  //建立結構
 			i=0;
 		}
 		
-		nowmonster1.HP=nowmonster1.HP-i;
+		nowmonster1.HP-=i;
 		
 		printf("Use %s !!You deal %d damage to the monster!\n",skill[1].name,i);
 	}
@@ -248,7 +248,15 @@ int main(int argc, char *argv[]) {
 	system("cls");
 	}
 	system("cls");
-    printf("You DIED.\nYour score is : %d",tower_level*10+player_status[0]*5+kill_num*2);
+    printf("You DIED.\nYour score is : %d\n",tower_level*10+player_status[0]*5+kill_num*2);
+    
+    FILE *fp = fopen("savedata/scores.txt", "a+");
+				  time_t  timer = time(NULL);
+			fprintf(fp,"\t%15s score = %d\t\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2,ctime(&timer));
+
+
+		
+    	fclose(fp);
     
     system("pause");
     
@@ -658,7 +666,7 @@ void monster_creat(){
 	
 	FILE *fp;
 
-       if( ( fp = fopen( "monsters.csv", "r")) == NULL) //沒找到檔案就結束 
+       if( ( fp = fopen( "data/monsters.csv", "r")) == NULL) //沒找到檔案就結束 
        {
               puts("Cannot open the file");
        }
@@ -742,12 +750,13 @@ void battle(){
 				
 				random=rand()%100+1;
 				
-				if(random<=40&&just_up!=true){system("cls");map_print();
+				if(random<=40&&just_up!=true){
+					
+					player_position=pres_player_position;
+					system("cls");map_print();
 				status_print();printf("============\n  TURN %d\n============\n",turn);
 					
 					printf("你逃走了！\n");
-					
-					player_position=pres_player_position;
 					
 					battling=false;
 					
@@ -872,6 +881,12 @@ void battle(){
 		}
 
 			}
+			if(tower_monster_living[tower_level][player_position-1]==true){
+    	monster_command();
+    	if(player_status[9]>=player_status[0]+4){
+		player_levelup();
+	}
+	}
 						}
 		
 		}
@@ -1046,7 +1061,7 @@ void battle(){
 	char temp[100];
 	FILE *fp;
 
-       if( ( fp = fopen( "Skills.csv", "r")) == NULL) //沒找到檔案就結束 
+       if( ( fp = fopen( "data/Skills.csv", "r")) == NULL) //沒找到檔案就結束 
        {
               puts("Cannot open the file");
        }

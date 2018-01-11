@@ -873,7 +873,14 @@ void battle(){
 				}
 				else{printf("無效指令！\n");goto invalid_command;
 				}
-				player_speed-=100;
+				player_speed-=100;	
+				if(player_ability[0]==true&&player_status[1]!=player_status[10]){
+			player_status[1]+=player_status[10]*1/100;
+			if(player_status[1]>player_status[10]){
+				player_status[1]=player_status[10];
+			}
+			printf("你的血在沸騰！你感覺自己的體力稍稍回復了！\n");
+		}
 		}else if(monster_speed>player_speed && monster_speed>=100 && nowmonster1.HP >0){
 			monster_action();
 			monster_speed-=100;
@@ -903,13 +910,7 @@ void battle(){
 		}
 		if(player_status[1]<=0){
 		i++;}
-		if(player_ability[0]==true&&player_status[1]!=player_status[10]){
-			player_status[1]+=player_status[10]*1/100;
-			if(player_status[1]>player_status[10]){
-				player_status[1]=player_status[10];
-			}
-			printf("你的血在沸騰！你感覺自己的體力稍稍回復了！\n");
-		}
+	
 		}
 		}	battle_distance=2;
 		}

@@ -41,7 +41,7 @@ struct info  //建立結構
 		if(cri<=player_status[7]){
 			
 			i=i*2;
-			printf("Critical Hit !\n");
+			printf("爆擊!\n");
 		}
 		
 		if(i<0){
@@ -50,7 +50,7 @@ struct info  //建立結構
 		
 		nowmonster1.HP-=i;
 		
-		printf("Use %s !!You deal %d damage to the monster!\n",skill[1].name,i);
+		printf("使用 %s !!你對敵人造成 %d 點傷害!\n",skill[1].name,i);
 	}
 	void skill2(){
 		
@@ -67,7 +67,7 @@ struct info  //建立結構
 			player_status[1]=player_status[10];
 		}
 		
-		printf("Use %s !!You deal %d damage to the monster and drain %d HP!!!\n",skill[2].name,i,i/4);
+		printf("使用 %s !!你對怪物造成 %d 點傷害並吸取 %d 點生命!!!\n",skill[2].name,i,i/4);
 		
 		
 	}
@@ -79,7 +79,7 @@ struct info  //建立結構
 		
 		nowmonster1.HP-=i;
 		
-		printf("Use %s !!The enemy receive %d damage without any resistance!\n",skill[3].name,i);
+		printf("使用 %s !!怪物在無法抵抗的狀況下受到 %d 點傷害!\n",skill[3].name,i);
 	}
 	void skill4(){
 		
@@ -89,7 +89,7 @@ struct info  //建立結構
 		
 		nowmonster1.HP-=i;
 		
-		printf("You throw %d dust to the enemy and deal %d damage,how waste!\n",dust/100,i);
+		printf("你引爆了 %d 份的塵並造成 %d 點傷害，多麼奢侈!\n",dust/100,i);
 		
 		dust=dust-dust/100;
 	}
@@ -101,11 +101,11 @@ struct info  //建立結構
 			
 			nowmonster1.HP=0;
 			
-			printf("You cut the monster into two pieces!\n");
+			printf("你將怪物切成兩半!\n");
 			
 		}
 		else{
-			printf("Failed!You have no chance to attack the enemy!\n");
+			printf("失敗，怪物毫無破綻!\n");
 		}
 			
 	}
@@ -118,14 +118,14 @@ struct info  //建立結構
 		if(cri<=player_status[7]){
 			
 			i=i*2;
-			printf("Critical Hit !\n");
+			printf("爆擊!\n");
 		}
 		
 		if(i<0){
 			i=0;
 		}
 		nowmonster1.HP-=i;
-		printf("You attack the monster vigorously!!Deal %d damage!\n",i);
+		printf("你精確的瞄準了怪物的弱點，造成 %d 點傷害!\n",i);
 		
 	}
 	void skill7(){
@@ -134,7 +134,7 @@ struct info  //建立結構
 		
 		player_status[1]+=i;
 		
-		printf("You pray for your god...God Blessing!You recover %d HP!\n",i);
+		printf("你虔誠的向神祈禱......神明保佑！你回復了 %d 點血量!\n",i);
 		
 		
 	}
@@ -149,7 +149,7 @@ struct info  //建立結構
 			
 		}
 		
-		printf("You become harder!Your defense has increased %d.\n",7+player_status[0]*2);
+		printf("你變得更耐打了，你的防禦力上升了 %d 點！\n",7+player_status[0]*2);
 		
 		buff_def_count=2;
 		
@@ -167,7 +167,7 @@ struct info  //建立結構
 		
 	
 		
-		printf("The monster become weaken!It's power is down about %d\n",5+player_status[0]*2);
+		printf("怪物變得虛弱了！牠的攻擊力下降了約 %d\n",5+player_status[0]*2);
 		
 		debuff_atk_count=2;
 		
@@ -184,7 +184,7 @@ struct info  //建立結構
 		
 		nowmonster1.HP-=i;
 		
-		printf("A big Fireball!!You deal %d damage to the enemy!\n",i);
+		printf("一顆大火球！你對怪物造成了 %d 點傷害！\n",i);
 		
 		
 	}
@@ -194,13 +194,13 @@ struct info  //建立結構
 		
 		player_status[2]+=i;
 		
-		printf("You meditation for a while.Fresh!You recover %d mana!\n",i);
+		printf("你冥想了一下，回復 %d 點魔力！\n",i);
 		
 		
 	}
 	void skill12(){
 			debuff_poison_count++;
-		printf("The enemy is poisoned!");
+		printf("敵人中毒了！");
 	}
 	
 	void (*skill_call[12])()={skill1,skill2,skill3,skill4,skill5,skill6,skill7,skill8,skill9,skill10,skill11,skill12};	
@@ -241,8 +241,10 @@ int main(int argc, char *argv[]) {
 		player_levelup();
 	}
 	}
+	if(player_status[1]<=0){
+		break;
+	}
 	
-	 
     command_input();
 
 	system("cls");
@@ -251,12 +253,9 @@ int main(int argc, char *argv[]) {
     printf("You DIED.\nYour score is : %d\n",tower_level*10+player_status[0]*5+kill_num*2);
     
     FILE *fp = fopen("savedata/scores.txt", "a+");
-				  time_t  timer = time(NULL);
-			fprintf(fp,"\t%15s score = %d\t\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2,ctime(&timer));
-
-
-		
-    	fclose(fp);
+			time_t  timer = time(NULL);
+			fprintf(fp,"\t%15s score = %d\tv1.35\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2,ctime(&timer));
+    		fclose(fp);
     
     system("pause");
     
@@ -270,13 +269,13 @@ void player_creat(){
 	
 	char choose[2]={'0'};
 	
-	printf("Please enter Player name(Max 15 words):");
+	printf("請輸入玩家名稱(Max 15 words):");
 	
 	scanf("%s",&player_name);
 	
 	while(point>0){
 	
-	printf("Please choose your ability(%dleft):\n(1)怪力 (你天生神力，開場即會使用重斬)\n(2)鷹眼 (你目光如炬，可以輕易看破怪物的狀態)\n(3)輕靈 (你身輕如燕，躲過怪物的眼睛輕而易舉)\n(4)技能78\n(5)火之子 (你是火的孩子！開場即會使用火球術)\n(6)赫爾魯斯之血 (你繼承了傳說中的血統，當你受傷時會逐漸回復)\n",point);
+	printf("請選擇天賦( %dleft):\n(1)怪力 (你天生神力，開場即會使用重斬)\n(2)鷹眼 (你目光如炬，可以輕易看破怪物的狀態)\n(3)輕靈 (你身輕如燕，躲過怪物的眼睛輕而易舉)\n(4)技能78\n(5)火之子 (你是火的孩子！開場即會使用火球術)\n(6)赫爾魯斯之血 (你繼承了傳說中的血統，當你受傷時會逐漸回復)\n",point);
 	
 	unability: scanf("%s",&choose);
 
@@ -311,7 +310,7 @@ void player_creat(){
 			player_ability[0]=true;
 			break;
 		}
-		default:printf("Not this number!\n");goto unability;
+		default:printf("沒有這個選項!\n");goto unability;
 	}
 	
 	point--;
@@ -323,7 +322,7 @@ void player_creat(){
 		
 	system("cls");
 	
-	printf("Please choose your bonus(%dleft):\n",point);
+	printf("請選擇你的成長方向(%dleft):\n",point);
 	
 	printf("(1)+%dHP\n(2)+%dMP\n(3)+%dAtk\n(4)+%dDef\n(5)+%dMAtk\n(6)+%dMDef\n(7)+%dCrit\n",30/(4-point),12/(4-point),6/(4-point),6/(4-point),6/(4-point),6/(4-point),9/(5-point));
 	
@@ -363,7 +362,7 @@ void player_creat(){
 			player_status[7]=player_status[7]+9/(5-point);
 			break;
 		}
-		default:printf("NO this number!!\n");goto  unstatus;
+		default:printf("沒有這個選項!!\n");goto  unstatus;
 	}
 	
 	point--;
@@ -499,7 +498,7 @@ void map_print(){//塗地圖
 
 	void status_print(){
 		printf("===========================================================================================================\n");
-		printf(" %s LV.%d  HP=%d/%d MP=%d/%d Atk=%d Def=%d MAtk=%d MRes=%d Crit=%d EXP=%d/%d   第%d層  %dDust\n",player_name,player_status[0],player_status[1],player_status[10],player_status[2],player_status[11],player_status[3],player_status[4],player_status[5],player_status[6],player_status[7],player_status[9],player_status[0]+4,tower_level+1,dust);
+		printf(" %s LV.%d  HP=%d/%d MP=%d/%d Atk=%d Def=%d MAtk=%d MRes=%d Crit=%d EXP=%d/%d   第%d層  %d Dust\n",player_name,player_status[0],player_status[1],player_status[10],player_status[2],player_status[11],player_status[3],player_status[4],player_status[5],player_status[6],player_status[7],player_status[9],player_status[0]+4,tower_level+1,dust);
 		printf("===========================================================================================================\n");
 	}
 
@@ -509,7 +508,7 @@ void map_print(){//塗地圖
 		
 		char input[2]={'0'};
 		
-		invalid_command:printf("What to do now?\n");
+		invalid_command:printf("要做什麼?\n");
 		
 		scanf("%s",&input);
 		
@@ -612,7 +611,7 @@ void map_print(){//塗地圖
 					pres_player_position=player_position;
 				}
 				else{
-				printf("No way to get up!\n");
+				printf("這裡沒有樓梯！\n");
 				goto invalid_command;
 			}
 				
@@ -715,10 +714,10 @@ void battle(){
 	
 	if(player_ability[1]==true){
 		
-		printf("The %s (HP=%d) appear!\n",nowmonster1.name,nowmonster1.HP);
+		printf(" %s (HP=%d) 出現了\n",nowmonster1.name,nowmonster1.HP);
 	}
 	else{
-		printf("The %s appear!\n",nowmonster1.name);
+		printf(" %s 出現了！\n",nowmonster1.name);
 	}
 	
 	i=0;
@@ -735,16 +734,16 @@ void battle(){
 		
 		while(i==0){printf("============\n  TURN %d\n============\n",turn);
 			
-		invalid_command: printf("Your turn ! What to do now ?\n");
+		invalid_command: printf("你的回合！要怎麼做？\n");
 		
 		 scanf("%s",&command[0]);
 			
 			if(command[0]=='k'){system("cls");map_print();
 				status_print();printf("============\n  TURN %d\n============\n",turn);
-				printf("Attack!\n");
+				printf("攻擊！\n");
 				damage=player_damage_count();	
 				nowmonster1.HP=nowmonster1.HP-damage;
-				printf("You deal %d damage to the monster!\n",damage);
+				printf("你對怪物造成 %d 點傷害！\n",damage);
 			}
 			else if(command[0]=='r'){
 				
@@ -776,7 +775,7 @@ void battle(){
 					}
 				
 			}else if(command[0]=='s'){
-				printf("Use which skill?\n");
+				printf("用哪個技能？\n");
 				
 				id=1,count=0;
 				
@@ -816,24 +815,24 @@ void battle(){
 				}
 				else if(compare<=count && player_status[2]<skill[which_skills[compare-1]].MP){
 					
-					printf("You don't have enough mana!\n'");
+					printf("你沒有足夠的魔力！\n'");
 					goto invalid_command;
 				}
 				else{
-					printf("Invalid command!\n");
+					printf("無效指令！\n");
 					goto invalid_command;
 				}
 				}
 					
 				}
-				else{printf("Invalid command!\n");goto invalid_command;
+				else{printf("無效指令！\n");goto invalid_command;
 				}
 		if(debuff_poison_count!=0){
 			nowmonster1.HP=nowmonster1.HP-(debuff_poison_count*5/100*nowmonster1.HP);		}
 				
 				
 		if(nowmonster1.HP<=0){
-			printf("The monster is dead!\n");
+			printf("你打敗了怪物！牠化成一堆塵之後消失了\n");
 			tower_monster_living[tower_level][player_position-1]=false;
 			battling=false;
 			player_status[9]++;
@@ -841,7 +840,7 @@ void battle(){
 			int gold=(tower_level+1)*(rand()%5+5);
 			dust=dust+gold;
 			
-			printf("You gain %d dust.\n",gold);
+			printf("你得到了 %d 塵.\n",gold);
 			i++;
 			debuff_poison_count=0;
 			debuff_atk_count=0;
@@ -854,16 +853,16 @@ void battle(){
 			
 			if(player_ability[1]==true){
 				
-				printf("%s (HP=%d) attack you!\n",nowmonster1.name,nowmonster1.HP);
+				printf("%s (HP=%d) 攻擊你！\n",nowmonster1.name,nowmonster1.HP);
 			}
 			else{
-			printf("%s attack you!\n",nowmonster1.name);
+			printf("%s 攻擊你！\n",nowmonster1.name);
 				
 			}
 		
 			damage=monster_damage_count();
 			
-			printf("The monster deal %d damage to you!\n");
+			printf("怪物對你造成了 %d 點傷害！\n",damage);
 			
 			player_status[1]=player_status[1]-damage;
 			
@@ -873,11 +872,11 @@ void battle(){
 		if(player_status[1]<=0){
 		i++;}
 		if(player_ability[0]==true&&player_status[1]!=player_status[10]){
-			player_status[1]+=player_status[10]*2/100;
+			player_status[1]+=player_status[10]*1/100;
 			if(player_status[1]>player_status[10]){
 				player_status[1]=player_status[10];
 			}
-			printf("Your blood is heating!Your body is recovering\n");
+			printf("你的血在沸騰！你感覺自己的體力稍稍回復了！\n");
 		}
 
 			}
@@ -907,7 +906,7 @@ void battle(){
 		if(cri<=player_status[7]){
 			
 			i=i*2;
-			printf("Critical Hit !\n");
+			printf("爆擊！\n");
 		}
 		
 		if(i<0){
@@ -960,7 +959,7 @@ void battle(){
 	system("cls");
 	
 	
-	printf("Level UP!\nPlease choose your bonus(%dleft):\n",point);
+	printf("你升級了！\n請選擇你的成長方向！(%d left):\n",point);
 	
 	printf("(1)+%dHP\n(2)+%dMP\n(3)+%dAtk\n(4)+%dDef\n(5)+%dMAtk\n(6)+%dMDef\n(7)+%dCrit\n",10,4,2,2,2,2,1);
 	
@@ -1002,7 +1001,7 @@ void battle(){
 			player_status[7]=player_status[7]+1;
 			break;
 		}
-		default:printf("NO this number!!\n");goto  unstatus;
+		default:printf("無此選項！\n");goto  unstatus;
 	}
 	
 	point--;
@@ -1014,7 +1013,7 @@ void battle(){
 		
 		int random=rand()%11,which_skill[3],choose_what;
 		
-		printf("Please choose a skill you want to learn!\n");
+		printf("請選擇一項想學習的技能！\n");
 		int i=0;
 		while(i<3){
 			if(skill[random].learned==false){
@@ -1041,7 +1040,7 @@ void battle(){
 			skill[which_skill[2]].learned=true;
 		}
 		else{
-			printf("Invalid number!\n");
+			printf("無此選項！\n");
 			goto invalid_choice;
 		}
 		
@@ -1087,20 +1086,20 @@ void buff_print(){
 				debuff_atk_count--;
 				if(debuff_atk_count==0){
 		nowmonster1.ATK=pres_monster1.ATK;
-		printf("The monster's power is back to normal!\n");
+		printf("怪物的戰鬥力回復了！\n");
 								}		
 				else{
-		printf("The monster is weaken! left %d turn\n",debuff_atk_count);
+		printf("怪物攻擊的力道變弱了！還剩 %d 回合\n",debuff_atk_count);
 					}
 			}
 	if(buff_def_count!=0){
 				buff_def_count--;
 				if(buff_def_count==0){
 					player_status[4]=pres_player_status[4];
-					printf("Your body is back to normal!Be careful!\n");
+					printf("你的身體能力回復了，小心！\n");
 	}
 	else{
-		printf("You are Harded than normal! left %d turn\n",buff_def_count);
+		printf("你變得比以前更堅韌，還剩 %d 回合！\n",buff_def_count);
 	}
 			}
 	
@@ -1114,10 +1113,10 @@ void monster_command(){
 	nowmonster1=monster[tower_monster[tower_level][player_position-1]];
 	
 	if(player_ability[1]==true){
-		printf("You see a %s (HP=%d) in the room.What do you want to do?\n(1)Battle\n(2)Search\n(3)Go back\n",nowmonster1.name,nowmonster1.HP);
+		printf("你看到 %s (HP=%d) 在房間裡，要怎麼做？\n(1)戰鬥\n(2)潛行\n(3)返回\n",nowmonster1.name,nowmonster1.HP);
 	}
 	else{
-		printf("You see a %s  in the room.What do you want to do?\n(1)Battle\n(2)Search\n(3)Go back\n",nowmonster1.name);
+		printf("你看到 %s 在房間裡，要怎麼做？\n(1)戰鬥\n(2)潛行\n(3)返回\n",nowmonster1.name);
 	}
 	char monster_command_input[2];
 	
@@ -1136,16 +1135,20 @@ void monster_command(){
 				spot-=20;
 			}
 			if(spot<=35){
-				printf("Success! The monster doesn't notice you!But you can still be spotted if you stay in this room....\n");
+				printf("怪物似乎沒有注意到你！但你若繼續留在這裡很有可能會被發現......\n");
 			}
 			else{
-				system("cls");
-				printf("Failed!You are spotted by the monster!\n");
+				printf("失敗！怪物向你突襲！\n");
 				int damages=monster_damage_count();
-				printf("The monster deal %d damage to you!\n",damages);
+				printf("怪物對你造成了 %d 點傷害！\n",damages);
 				player_status[1]-=damages;
+				system("pause");
+				system("cls");
+				if(player_status[1]!=0){
 				battling=true;
-				battle();
+				battle();	
+				}
+				
 			}
 			break;
 		}
@@ -1168,7 +1171,7 @@ void monster_command(){
 			}
 			break;
 		}
-		default:printf("Invalid command!\n");goto invalid_monster_command;
+		default:printf("無效指令！");goto invalid_monster_command;
 
 	}
 	

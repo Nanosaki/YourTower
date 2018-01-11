@@ -1,0 +1,22 @@
+﻿ID,HP,ATK,P-def,M-def,Attack type,name
+1,50,20,20,20,1,Flan
+2,80,23,22,20,1,High Flan
+3,120,28,26,22,1,Flan Elite
+4,110,35,35,35,1,Gremlin
+5,160,42,42,42,1,Hard Gremlin
+6,230,50,60,30,2,Gargoyle
+7,230,50,30,60,1,Cockatrice
+8,260,42,66,66,2,Schrodinger
+9,300,54,70,70,2,Soul eater
+10,120,120,120,120,1,Behemoth
+11,100,100,90,100,1,Ochu
+12,200,90,80,80,2,Zu
+13,20,2000,0,0,2,1/2 Hollow
+14,1,1,0,0,1,The accursed couple
+15,200,220,180,180,1,"TRUCK,the bike eliminator"
+16,70,120,120,80,1,Mad monkeys in NSYSU
+17,100,50,30,100,2,Student Girls
+18,300,700,700,700,1,"The Assistant,Elite of Dong-You's "
+19,500,1000,1000,1000,2,"Dong-You,The Ultimate Seeker"
+20,,,,,,
+21,,,,,,

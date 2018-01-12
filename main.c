@@ -11,7 +11,7 @@ static	int tower[100][9],tower_road[100][9],tower_monster[100][9];//tower[層數][
 	
 static	int player_status[15]={1,100,50,30,10,20,10,7,50,0,100,50,2,100},pres_player_status[15]={1,100,50,30,10,20,10,7,50,0,100,50},skillnum=0,dust=0;//player_Status={0Level,1HP,2MP,3Atk,4def,5Matk,6Mdef,7Critical,8Rstealth,9EXP
 						//				10MHP,11MMP,12range,13speed}
-static int buff_def_count=0,debuff_atk_count=0,debuff_poison_count=0,battle_distance=2;
+static int buff_def_count=0,debuff_atk_count=0,debuff_poison_count=0,battle_distance=3;
 
 static	char player_name[15];
 
@@ -22,7 +22,7 @@ static bool battling=false,just_up=false,player_ability[6],tower_monster_living[
 
 struct skillinfo  //建立結構 
 {
-	int ID,type,MP;
+	int ID,type,MP,distance;
 	char name[100],description[100];
 	bool learned;
 }skill[30];
@@ -200,7 +200,7 @@ struct info  //建立結構
 	}
 	void skill12(){
 			debuff_poison_count++;
-		printf("敵人中毒了！");
+		printf("敵人中毒了！\n");
 	}
 	
 	void (*skill_call[12])()={skill1,skill2,skill3,skill4,skill5,skill6,skill7,skill8,skill9,skill10,skill11,skill12};	
@@ -250,7 +250,7 @@ int main(int argc, char *argv[]) {
     
     FILE *fp = fopen("savedata/scores.txt", "a+");
 			time_t  timer = time(NULL);
-			fprintf(fp,"\t%15s score = %d\tv1.35\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2,ctime(&timer));
+			fprintf(fp,"\t%15s score = %d\tv1.41\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2,ctime(&timer));
     		fclose(fp);
     
     system("pause");
@@ -293,7 +293,7 @@ void player_creat(){
 			break;
 		}
 		case '4':{
-			skill[8].learned=true;
+			skill[12].learned=true;
 			skill[9].learned=true;
 			
 			break;
@@ -493,9 +493,9 @@ void map_print(){//塗地圖
 	}
 
 	void status_print(){
-		printf("================================================================================================================\n");
+		printf("======================================================================================================================\n");
 		printf(" %s LV.%d  HP=%d/%d MP=%d/%d Atk=%d Def=%d MAtk=%d MRes=%d Crit=%d EXP=%d/%d Range=%d Speed=%d  第%d層  %d Dust\n",player_name,player_status[0],player_status[1],player_status[10],player_status[2],player_status[11],player_status[3],player_status[4],player_status[5],player_status[6],player_status[7],player_status[9],player_status[0]+4,player_status[12],player_status[13],tower_level+1,dust);
-		printf("================================================================================================================\n");
+		printf("======================================================================================================================\n");
 	}
 
 	void command_input(){
@@ -700,19 +700,19 @@ void monster_creat(){
 }
 void battle_map(){
 	int i=0;
-	printf("---------------\n");
-	while(i+battle_distance!=5){
+	printf("------------------------\n");
+	while(i+battle_distance!=9){
 		printf(" ")	;
 		i++;
 	}
 	printf("O ");
 	i=0;
 	while(i<battle_distance){
-		printf("─ ");
+		printf("- ");
 		i++;
 	}
-	printf(" X\n");
-	printf("---------------\n");
+	printf("X\n");
+	printf("------------------------\n");
 }
 
 void battle(){
@@ -745,7 +745,7 @@ void battle(){
 		
 		while(i==0){
 		
-			if(player_speed>monster_speed && player_speed>=100){
+			if(player_speed>=monster_speed && player_speed>=100){
 			battle_map();printf("============\n  TURN %d\n============\n",turn);invalid_command: printf("你的回合！要怎麼做？\n");
 		
 		 scanf("%s",&command[0]);
@@ -764,6 +764,12 @@ void battle(){
 				printf("你跟怪物離得太遠了！\n");
 				goto invalid_command;
 			}
+			}
+			else if(command[0]=='w'){
+				system("cls");map_print();
+				status_print();
+				printf("============\n  TURN %d\n============\n",turn);
+				printf("你在原地等待！\n");
 			}
 			else if(command[0]=='r'){
 				
@@ -799,11 +805,11 @@ void battle(){
 				
 				id=1,count=0;
 				
-				while(id<12){
+				while(id<13){
 					
 				if(skill[id].learned==true){
 						
-					printf("(%d) %s───  %s(%d)\n",count+1,skill[id].name,skill[id].description,skill[id].MP);
+					printf("(%d) %s───  %s (消費MP=%d) (射程=%d)\n",count+1,skill[id].name,skill[id].description,skill[id].MP,skill[id].distance);
 					
 					which_skills[count]=id;
 					count++;
@@ -825,10 +831,18 @@ void battle(){
 				if(compare<=count && player_status[2]>=skill[which_skills[compare-1]].MP){
 					system("cls");map_print();
 				status_print();printf("============\n  TURN %d\n============\n",turn);
-	
+				
+				if(skill[which_skills[compare-1]].distance>=battle_distance){
 				player_status[2]=player_status[2]-skill[which_skills[compare-1]].MP;
 				
-				skill_call[(skill[which_skills[compare-1]].ID)-1]();
+				skill_call[(skill[which_skills[compare-1]].ID)-1]();	
+				}
+				else{
+					printf("不在有效射程裡！\n");
+					goto invalid_command;
+				}
+	
+				
 
 					
 				count=0,compare=0;
@@ -859,7 +873,7 @@ void battle(){
 					}
 				}
 				else if(command[0]=='4'){
-					if(battle_distance<3){
+					if(battle_distance<5){
 						battle_distance++;
 				system("cls");map_print();
 				status_print();
@@ -884,14 +898,16 @@ void battle(){
 		}else if(monster_speed>player_speed && monster_speed>=100 && nowmonster1.HP >0){
 			monster_action();
 			monster_speed-=100;
+			if(debuff_poison_count!=0){
+			int poison_damage=debuff_poison_count*5*pres_monster1.HP/100;
+			nowmonster1.HP-=poison_damage;
+			printf("怪物中毒了！受到 %d 點傷害！\n",poison_damage);		}	
 			turn++;	
 		}
 		else{
 			player_speed+=player_status[13];
 			monster_speed+=nowmonster1.speed;
 		}
-		if(debuff_poison_count!=0){
-			nowmonster1.HP=nowmonster1.HP-(debuff_poison_count*5/100*nowmonster1.HP);		}	
 		if(nowmonster1.HP<=0){
 			printf("你打敗了怪物！牠化成一堆塵之後消失了\n");
 			tower_monster_living[tower_level][player_position-1]=false;
@@ -912,31 +928,39 @@ void battle(){
 		i++;}
 	
 		}
-		}	battle_distance=2;
+		}	battle_distance=3;
 		}
 	
 	void monster_action(){
 		if(nowmonster1.attack_distance>=battle_distance){
+			
+			int monster_choose=rand()%100+1;
+			
+			if(nowmonster1.attack_distance>player_status[12] && monster_choose<=30*(nowmonster1.attack_distance-player_status[12])){
+				battle_distance++;
+				printf("怪物與你拉開了距離！\n");
+			}
+			else{
 			if(player_ability[1]==true){
-				
 				printf("%s (HP=%d) 攻擊你！\n",nowmonster1.name,nowmonster1.HP);
 			}
 			else{
-			printf("%s 攻擊你！\n",nowmonster1.name);
-				
+			printf("%s 攻擊你！\n",nowmonster1.name);	
 			}
 		
 			int damage=monster_damage_count();
 			
 			printf("怪物對你造成了 %d 點傷害！\n",damage);
 			
-			player_status[1]=player_status[1]-damage;	
+			player_status[1]=player_status[1]-damage;		
+			}
 		}
 		else{
 			battle_distance--;
 			printf("怪物衝向了你！\n");
 		}	
 			buff_print();
+			status_print();
 
 	}
 		
@@ -1119,8 +1143,11 @@ void battle(){
 		{
             while(fgets(temp, sizeof(temp), fp) && i<16)  //當讀到第random行時，要指定怪的話就改成ID+1(跳過標題標示) 
             {
-				sscanf(temp,"%d,%d,%d,%[^,],%[^\n]",&skill[i-2].ID,&skill[i-2].type,&skill[i-2].MP,skill[i-2].description,skill[i-2].name);  
-                i++;
+				sscanf(temp,"%d,%d,%d,%[^,],%d,%[^\n]",&skill[i-2].ID,&skill[i-2].type,&skill[i-2].MP,skill[i-2].description,&skill[i-2].distance,skill[i-2].name);  
+                if(skill[i-2].distance==0){
+                	skill[i-2].distance=player_status[12];
+				}
+				i++;
                 
 				//使用isscanf將info字串內的東西格式化(類似分割)，並依序存入結構 
 			}

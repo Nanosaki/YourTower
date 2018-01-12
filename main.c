@@ -54,7 +54,7 @@ struct info  //建立結構
 	}
 	void skill2(){
 		
-		int i=rand()%30+60;
+		int i=rand()%15+100;
 		
 		i=(player_status[3]*i/100)-nowmonster1.P_def;
 		
@@ -62,12 +62,12 @@ struct info  //建立結構
 		}
 		
 		nowmonster1.HP=nowmonster1.HP-i;
-		player_status[1]=player_status[1]+(i/4);
+		player_status[1]=player_status[1]+(i/2);
 		if(player_status[1]>player_status[10]){
 			player_status[1]=player_status[10];
 		}
 		
-		printf("使用 %s !!你對怪物造成 %d 點傷害並吸取 %d 點生命!!!\n",skill[2].name,i,i/4);
+		printf("使用 %s !!你對怪物造成 %d 點傷害並吸取 %d 點生命!!!\n",skill[2].name,i,i/2);
 		
 		
 	}
@@ -95,7 +95,7 @@ struct info  //建立結構
 	}
 	void skill5(){
 		
-		int i=rand()%100+5;
+		int i=rand()%100+8;
 		
 		if(i<=5){
 			
@@ -246,11 +246,11 @@ int main(int argc, char *argv[]) {
 	system("cls");
 	}
 	system("cls");
-    printf("You DIED.\nYour score is : %d\n",tower_level*10+player_status[0]*5+kill_num*2);
+    printf("You DIED.\nYour score is : %d\n",tower_level*10+player_status[0]*5+kill_num*2+dust/100);
     
     FILE *fp = fopen("savedata/scores.txt", "a+");
 			time_t  timer = time(NULL);
-			fprintf(fp,"\t%15s score = %d\tv1.41\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2,ctime(&timer));
+			fprintf(fp,"\t%15s score = %d\tv1.42\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2+dust/100,ctime(&timer));
     		fclose(fp);
     
     system("pause");
@@ -746,7 +746,7 @@ void battle(){
 		while(i==0){
 		
 			if(player_speed>=monster_speed && player_speed>=100){
-			battle_map();printf("============\n  TURN %d\n============\n",turn);invalid_command: printf("你的回合！要怎麼做？\n");
+			battle_map();printf("============\n  TURN %d\n============\n",turn);invalid_command: printf("你的回合！要怎麼做？\n(k)攻擊\n(s)技能選單\n(w)原地等待\n(r)逃跑\n(4)拉開距離\n(6)拉近距離\n");
 		
 		 scanf("%s",&command[0]);
 			
@@ -888,13 +888,7 @@ void battle(){
 				else{printf("無效指令！\n");goto invalid_command;
 				}
 				player_speed-=100;	
-				if(player_ability[0]==true&&player_status[1]!=player_status[10]){
-			player_status[1]+=player_status[10]*1/100;
-			if(player_status[1]>player_status[10]){
-				player_status[1]=player_status[10];
-			}
-			printf("你的血在沸騰！你感覺自己的體力稍稍回復了！\n");
-		}
+				
 		}else if(monster_speed>player_speed && monster_speed>=100 && nowmonster1.HP >0){
 			monster_action();
 			monster_speed-=100;
@@ -928,6 +922,19 @@ void battle(){
 		i++;}
 	
 		}
+		}
+		if(player_status[2]!=player_status[11]){
+			player_status[2]+=player_status[11]*10/100;
+			if(player_status[2]>player_status[11]){
+				player_status[2]=player_status[11];
+			}
+		}
+		if(player_ability[0]==true&&player_status[1]!=player_status[10]){
+			player_status[1]+=player_status[10]*1/100;
+			if(player_status[1]>player_status[10]){
+				player_status[1]=player_status[10];
+			}
+			printf("你的血在沸騰！你感覺自己的體力稍稍回復了！\n");
 		}	battle_distance=3;
 		}
 	
@@ -1011,11 +1018,11 @@ void battle(){
 	
 	void player_levelup(){
 		
-		player_status[0]++;
-		player_status[9]=0;
-		player_status[1]=player_status[10];
-		player_status[2]=player_status[11];
-		player_status[1]=player_status[1]+15;
+	player_status[0]++;
+	player_status[9]=0;
+	player_status[1]=player_status[10];
+	player_status[2]=player_status[11];
+	player_status[1]=player_status[1]+15;
 	player_status[10]=player_status[10]+15;
 	player_status[2]=player_status[2]+5;
 	player_status[11]=player_status[11]+5;
@@ -1024,9 +1031,9 @@ void battle(){
 	player_status[5]=player_status[5]+3;
 	player_status[6]=player_status[6]+3;
 	player_status[7]=player_status[7]+1;
-		int	point=3;
+	int	point=3;
 		
-		char choose[2];
+	char choose[2];
 	
 	while(point!=0){
 	

@@ -1,0 +1,16 @@
+id,type,name,description,pirce
+1,1,Potion,Restores HP,10
+2,1,Mid-Potion,Restores more HP,20
+3,1,Hi-Potion,Restores a lot of HP,30
+4,1,Ether,Restores MP,40
+5,1,Mid-Ether,Restores more MP,50
+6,1,Hi-Ether,Restores a lot of MP,60
+7,1,Love letter from a girl,Fully restores HP and MP,70
+8,2,Flying Knife,Inflicts little physics damage to one foe,80
+9,2,Shuriken,Inflicts medium physics damage to one foe,90
+10,2,Demolition Bomb,Inflicts high physics damage to one foe,100
+11,2,"Scroll""Megido""",Inflicts little magic damage to one foe,110
+12,2,"Scroll""Megidola""",Inflicts medium magic damage to one foe,120
+13,2,"Scroll""Megidolaon""",Inflicts high magic damage to one foe,130
+14,2,"Scroll""Smokescreen""",100% Escapes from battle,140
+15,3,"Scroll""Teleport""",Escapes from dungeon,150

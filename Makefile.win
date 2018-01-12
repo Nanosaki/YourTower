@@ -1,15 +1,15 @@
-# Project: 專案1
+# Project: YourTower
 # Makefile created by Dev-C++ 5.11
 
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
-OBJ      = main.o
-LINKOBJ  = main.o
+OBJ      = ../新增資料夾/Final/final.o main.o
+LINKOBJ  = ../新增資料夾/Final/final.o main.o
 LIBS     = -L"C:/Download/OSU!Songs/DevCppPortable/MinGW64/lib" -L"C:/Download/OSU!Songs/DevCppPortable/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
 INCS     = -I"C:/Download/OSU!Songs/DevCppPortable/MinGW64/include" -I"C:/Download/OSU!Songs/DevCppPortable/MinGW64/x86_64-w64-mingw32/include" -I"C:/Download/OSU!Songs/DevCppPortable/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
 CXXINCS  = -I"C:/Download/OSU!Songs/DevCppPortable/MinGW64/include" -I"C:/Download/OSU!Songs/DevCppPortable/MinGW64/x86_64-w64-mingw32/include" -I"C:/Download/OSU!Songs/DevCppPortable/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Download/OSU!Songs/DevCppPortable/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
-BIN      = 專案1.exe
+BIN      = YourTower.exe
 CXXFLAGS = $(CXXINCS) 
 CFLAGS   = $(INCS) 
 RM       = rm.exe -f
@@ -23,6 +23,9 @@ clean: clean-custom
 
 $(BIN): $(OBJ)
 	$(CC) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+../新增資料夾/Final/final.o: ../新增資料夾/Final/final.c
+	$(CC) -c ../新增資料夾/Final/final.c -o ../新增資料夾/Final/final.o $(CFLAGS)
 
 main.o: main.c
 	$(CC) -c main.c -o main.o $(CFLAGS)

@@ -50,7 +50,7 @@ struct info  //建立結構
 		
 		nowmonster1.HP-=i;
 		
-		printf("使用 %s !!你對敵人造成 %d 點傷害!\n",skill[1].name,i);
+		printf("使用 %s !!你對敵人造成 %d 點傷害!\n",skill[2].name,i);
 	}
 	void skill2(){
 		
@@ -67,7 +67,7 @@ struct info  //建立結構
 			player_status[1]=player_status[10];
 		}
 		
-		printf("使用 %s !!你對怪物造成 %d 點傷害並吸取 %d 點生命!!!\n",skill[2].name,i,i/2);
+		printf("使用 %s !!你對怪物造成 %d 點傷害並吸取 %d 點生命!!!\n",skill[3].name,i,i/2);
 		
 		
 	}
@@ -79,7 +79,7 @@ struct info  //建立結構
 		
 		nowmonster1.HP-=i;
 		
-		printf("使用 %s !!怪物在無法抵抗的狀況下受到 %d 點傷害!\n",skill[3].name,i);
+		printf("使用 %s !!怪物在無法抵抗的狀況下受到 %d 點傷害!\n",skill[4].name,i);
 	}
 	void skill4(){
 		
@@ -809,9 +809,9 @@ void battle(){
 					
 				if(skill[id].learned==true){
 						
-					printf("(%d) %s───  %s (消費MP=%d) (射程=%d)\n",count+1,skill[id].name,skill[id].description,skill[id].MP,skill[id].distance);
+					printf("(%d) %s───  %s (消費MP=%d) (射程=%d)\n",count+1,skill[id+1].name,skill[id+1].description,skill[id+1].MP,skill[id+1].distance);
 					
-					which_skills[count]=id;
+					which_skills[count]=id+1;
 					count++;
 											}
 					id++;	
@@ -821,7 +821,9 @@ void battle(){
 				invalid_skill_command: scanf("%s",&command[0]);	
 				
 				if(command[0]=='b'){
-					
+				system("cls");map_print();
+				status_print();battle_map();
+				printf("============\n  TURN %d\n============\n",turn);
 					goto invalid_command;
 					
 				}
@@ -1092,20 +1094,17 @@ void battle(){
 	
 	if(player_status[0]%5==0){
 		
-		int random=rand()%11,which_skill[3],choose_what;
+		int random=rand()%11+1,which_skill[3],choose_what;
 		
 		printf("請選擇一項想學習的技能！\n");
 		int i=0;
 		while(i<3){
 			if(skill[random].learned==false){
-			
-			printf("(%d)%s─── %s (%d)\n",i+1,skill[random].name,skill[random].description,skill[random].MP);
-			
+			printf("(%d)%s─── %s (MP消耗=%d) (射程=%d)\n",i+1,skill[random].name,skill[random].description,skill[random].MP,skill[random].distance);
 			which_skill[i]=skill[random].ID;
-			
 			i++;
-		}
-		random=rand()%11;
+			}
+		random=rand()%11+1;
 		}
 		invalid_choice: scanf("%s",choose);
 		
@@ -1150,7 +1149,7 @@ void battle(){
 		{
             while(fgets(temp, sizeof(temp), fp) && i<16)  //當讀到第random行時，要指定怪的話就改成ID+1(跳過標題標示) 
             {
-				sscanf(temp,"%d,%d,%d,%[^,],%d,%[^\n]",&skill[i-2].ID,&skill[i-2].type,&skill[i-2].MP,skill[i-2].description,&skill[i-2].distance,skill[i-2].name);  
+				sscanf(temp,"%d,%d,%d,%[^,],%d,%[^\n]",&skill[i-1].ID,&skill[i-1].type,&skill[i-1].MP,skill[i-1].description,&skill[i-1].distance,skill[i-1].name);  
                 if(skill[i-2].distance==0){
                 	skill[i-2].distance=player_status[12];
 				}

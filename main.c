@@ -17,7 +17,7 @@ static	char player_name[15];
 
 static int player_position=8,pres_player_position=8,tower_level=0,kill_num=0,max_item=7,equip_num=0,item_num=0;
 
-static bool battling=false,just_up=false,player_ability[6],tower_monster_living[100][9];
+static bool battling=false,just_up=false,player_ability[6],tower_monster_living[100][9],in_town=true;
 
 void leader_of_village(void); 
 void teleporter(void);
@@ -372,8 +372,9 @@ struct info  //建立結構
 	}
 	void item15()//卷軸<傳送> 
 	{
-		
+		in_town=1;
 		printf("釋放 %s !!你離開了迷宮\n",items[15].name);
+		system("pause");
 	}
 	void (*item_call[15])()={item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,item11,item12,item13,item14,item15};	
 	
@@ -397,12 +398,17 @@ int main(int argc, char *argv[]) {
     
     system("cls");
     
-    equipment_display();
-    
-	
 	while(player_status[1]>0){
 		
-	map_print();
+		while(in_town==1){
+			
+			town_print();
+			
+			town_action();
+			
+		}
+		while(in_town==0){
+			map_print();
     
     status_print();
     
@@ -422,13 +428,17 @@ int main(int argc, char *argv[]) {
 	}
     command_input();
 	system("cls");
+			
+		}
+		
+	
 	}
 	system("cls");
     printf("You DIED.\nYour score is : %d\n",tower_level*10+player_status[0]*5+kill_num*2+dust/100);
     
     FILE *fp = fopen("savedata/scores.txt", "a+");
 			time_t  timer = time(NULL);
-			fprintf(fp,"\t%15s score = %d\tv1.56\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2+dust/100,ctime(&timer));
+			fprintf(fp,"\t%15s score = %d\tv1.6\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2+dust/100,ctime(&timer));
     		fclose(fp);
     
     system("pause");
@@ -888,11 +898,11 @@ void map_print(){//塗地圖
 				int item_print=0;
 				printf("背包欄位： %d / %d\n",equip_num+item_num,max_item);
 				while(item_print<equip_num){
-					printf("(%d) %8s (A= %2d MA= %2d Def= %2d MRes= %2d Range= %d)\n",item_print+1,equ_in_bag[item_print].name,equ_in_bag[item_print].atk,equ_in_bag[item_print].matk,equ_in_bag[item_print].P_Def,equ_in_bag[item_print].M_Def,equ_in_bag[item_print].distance);
+					printf("(%d) %-15s (A= %-2d  MA= %-2d  Def= %-2d  MRes= %-2d  Range= %d)\n",item_print+1,equ_in_bag[item_print].name,equ_in_bag[item_print].atk,equ_in_bag[item_print].matk,equ_in_bag[item_print].P_Def,equ_in_bag[item_print].M_Def,equ_in_bag[item_print].distance);
 					item_print++;
 				}
 				while(item_print<equip_num+item_num){
-					printf("(%d) %8s %15s 剩餘 %d 個\n",item_print+1,item_inbag[item_print-equip_num].name,item_inbag[item_print-equip_num].description,item_inbag[item_print-equip_num].amount);
+					printf("(%d) %-15s %-30s 剩餘 %-2d 個\n",item_print+1,item_inbag[item_print-equip_num].name,item_inbag[item_print-equip_num].description,item_inbag[item_print-equip_num].amount);
 					item_print++;
 				}
 				item_command();
@@ -1116,7 +1126,7 @@ void battle(){
 					
 				if(skill[id].learned==true){
 						
-					printf("(%d) %6s───  %15s (消費MP=%2d) (射程=%d)\n",count+1,skill[id+1].name,skill[id+1].description,skill[id+1].MP,skill[id+1].distance);
+					printf("(%d) %-15s───  %-30s (消費MP=%-2d) (射程=%d)\n",count+1,skill[id+1].name,skill[id+1].description,skill[id+1].MP,skill[id+1].distance);
 					
 					which_skills[count]=id+1;
 					count++;
@@ -1203,7 +1213,7 @@ void battle(){
 					printf("用哪個道具？\n");
 					int item_print=0;
 					while(item_print<item_num){
-					printf("(%d) %8s %15s 剩餘 %d 個\n",item_print+1,item_inbag[item_print].name,item_inbag[item_print].description,item_inbag[item_print].amount);
+					printf("(%d) %-15s %-30s 剩餘 %-2d 個\n",item_print+1,item_inbag[item_print].name,item_inbag[item_print].description,item_inbag[item_print].amount);
 					item_print++;}
 					printf("(b)取消\n");
 					scanf("%s",command);
@@ -1448,7 +1458,7 @@ void battle(){
 		int i=0;
 		while(i<3){
 			if(skill[random].learned==false){
-			printf("(%d)%8s─── %15s (MP消耗=%2d) (射程=%d)\n",i+1,skill[random].name,skill[random].description,skill[random].MP,skill[random].distance);
+			printf("(%d)%-15s─── %-30s (MP消耗=%-2d) (射程=%d)\n",i+1,skill[random].name,skill[random].description,skill[random].MP,skill[random].distance);
 			which_skill[i]=skill[random].ID;
 			i++;
 			}
@@ -1545,16 +1555,6 @@ void item_load(){
 			a++;
         }
         fclose(fp);		
-}
-void equipment_display(void){
-	int i;
-	int num;
-   	int counter=1;
-   	for(i=2;i<amount_of_equipments;i++) 
-   		if(equipments[i].have==1){
-   			 printf("%2d.%-30s physical DEF:%-3d magical DEF:%-3d HP:%-3d MP:%d\n",counter,equipments[i].name,equipments[i].P_Def,equipments[i].M_Def,equipments[i].atk,equipments[i].matk);
-   			 counter++;
-	}
 }
 void buff_print(){
 	
@@ -1727,18 +1727,18 @@ void item_drop(){
 				int item_print=0,choose=0;
 				printf("(0) ");
 				if(tt==1){
-				printf("%8s (A= %2d MA= %2d Def= %2d MRes= %2d Range= %d)\n",equipments[59].name,equipments[59].atk,equipments[59].matk,equipments[59].P_Def,equipments[59].M_Def,equipments[59].distance);	
+				printf("%-15s (A= %-2d MA= %-2d Def= %-2d MRes= %-2d Range= %d)\n",equipments[59].name,equipments[59].atk,equipments[59].matk,equipments[59].P_Def,equipments[59].M_Def,equipments[59].distance);	
 				}
 				else{
-				printf("%8s %15s \n",items[50].name,items[50].description);	
+				printf("%-15s %-30s \n",items[50].name,items[50].description);	
 				}
 				
 				while(item_print<equip_num){
-					printf("(%d) %8s (A= %2d MA= %2d Def= %2d MRes= %2d Range= %d)\n",item_print+1,equ_in_bag[item_print].name,equ_in_bag[item_print].atk,equ_in_bag[item_print].matk,equ_in_bag[item_print].P_Def,equ_in_bag[item_print].M_Def,equ_in_bag[item_print].distance);
+					printf("(%d) %-15s (A= %-2d MA= %-2d Def= %-2d MRes= %-2d Range= %-d)\n",item_print+1,equ_in_bag[item_print].name,equ_in_bag[item_print].atk,equ_in_bag[item_print].matk,equ_in_bag[item_print].P_Def,equ_in_bag[item_print].M_Def,equ_in_bag[item_print].distance);
 					item_print++;
 				}
 				while(item_print<equip_num+item_num){
-					printf("(%d) %8s %15s 剩餘 %d 個\n",item_print+1,item_inbag[item_print-equip_num].name,item_inbag[item_print-equip_num].description,item_inbag[item_print-equip_num].amount);
+					printf("(%d) %-15s %-30s 剩餘 %-2d 個\n",item_print+1,item_inbag[item_print-equip_num].name,item_inbag[item_print-equip_num].description,item_inbag[item_print-equip_num].amount);
 					item_print++;
 				}
 				invalid_command: scanf("%d",&choose);
@@ -1752,19 +1752,19 @@ void item_drop(){
 					}
 					else if(choose<=equip_num&&tt==2){
 						int i=choose-1;
-						while(i<=equip_num){
+						while(i<equip_num){
 							equ_in_bag[i]=equ_in_bag[i+1];
 							i++;
 						}
-						item_inbag[item_num+1]=items[50];
-						item_inbag[item_num+1].amount++;
+						item_inbag[item_num]=items[50];
+						item_inbag[item_num].amount++;
 						item_num++;
 						equip_num--;	
 					}
 					else if(choose>equip_num&&tt==1){
-						equ_in_bag[equip_num+1]=equipments[59];
+						equ_in_bag[equip_num]=equipments[59];
 						int i=choose-equip_num-1;
-						while(i<=item_num){
+						while(i<item_num){
 							item_inbag[i]=item_inbag[i+1];
 						}
 						item_num--;
@@ -1779,4 +1779,175 @@ void item_drop(){
 					printf("無效指令！\n");
 					goto invalid_command;
 				}
+}
+
+void seller_of_potion(){
+
+	int i,j;
+	int t=0;
+	for(i=1;i<15;i++)  // 印出商店道具 
+	printf("%-2d:%-20s %-40s 價錢:%d \n",i,items[i].name,items[i].description,items[i].price);
+	printf("請盡情挑選!!\t\t\t\t\t\t\t\t持有塵： %d\n輸入你想要的道具的數字(0離開)\n",dust);
+		while(t==0){
+		invalid_shop: scanf("%d",&j);
+		for(i=1;i<15;i++){
+			if(j==items[i].ID&&equip_num+item_num<=max_item&&dust>=items[i].price){
+				int k;
+				for(k=0;k<item_num;k++){
+					if(j==item_inbag[k].ID){
+						item_inbag[k].amount++;
+					}
+				}
+			dust-=items[i].price;
+			 printf("你購買了 %s.\n",items[i].name);
+		}
+			else if(j==items[i].ID&&equip_num+item_num>max_item){
+				items[50]=items[i];
+				dust-=items[i].price;
+				tt=2;
+				item_drop();
+			}
+			else if(j>14){
+				printf("沒有這個商品！\n");
+				goto invalid_shop;
+			}
+			else if(j==0){
+			 t=1;
+					}
+			else{
+				printf("你沒有足夠的塵！\n");
+				break;
+			}
+}
+}
+printf("歡迎常來!!\n");
+}
+void seller_of_equipment(){int i = 0, j = 0;
+		int temp1 = 0;
+		int temp2 = 0;
+		int temp3 = 0;
+		int temp4 = 0;
+		int temp5 = 0;
+		int temp6 = 0;
+		int temp9 = 0;
+		char temp7[100];
+		char temp8[100];
+		int t=0;
+	/*for(i=0;i<amount_of_equipments-1;i++)
+		printf("%d: %s physical defence:%d Magical defence:%d HP:%d MP:%d Price:%d\n",i+1,equipments[i+2].name,equipments[i+2].P_Def,equipments[i+2].M_Def,equipments[i+2].HP,equipments[i+2].MP,equipments[i+2].price);
+	 	printf("Please choose what you want:(Enter the number of what you want to buy(enter 0 to exit))\n");*/ 
+    for( i = -1; i < 35; i++) { //依照價錢排序 
+        for( j = i; j < 35; j++) {
+            if( equipments[j+2].price < equipments[i+2].price ) {
+                temp1 = equipments[j+2].price;
+                equipments[j+2].price = equipments[i+2].price;
+                equipments[i+2].price = temp1;
+				
+				strcpy(temp7, equipments[j+2].name); 
+				strcpy(equipments[j+2].name, equipments[i+2].name); 
+				strcpy(equipments[i+2].name, temp7); 
+                
+                temp2 = equipments[j+2].P_Def;
+                equipments[j+2].P_Def = equipments[i+2].P_Def;
+                equipments[i+2].P_Def = temp2;
+                
+                temp3 = equipments[j+2].M_Def;
+                equipments[j+2].M_Def = equipments[i+2].M_Def;
+                equipments[i+2].M_Def = temp3;
+            	
+            	temp4 = equipments[j+2].distance;
+                equipments[j+2].distance = equipments[i+2].distance;
+                equipments[i+2].distance= temp4;
+                
+                temp5 = equipments[j+2].type;
+                equipments[j+2].type = equipments[i+2].type;
+                equipments[i+2].type = temp5;
+                
+                temp6 = equipments[j+2].atk;
+                equipments[j+2].atk = equipments[i+2].atk;
+                equipments[i+2].atk = temp6;
+                
+                temp9 = equipments[j+2].matk;
+                equipments[j+2].matk = equipments[i+2].matk;
+                equipments[i+2].matk = temp9;
+            }
+        }
+    }
+for(i=1;i<37;i++)
+		printf("%-2d: %-20s A=%2d   MA=%2d   Def=%2d   MRes=%2d   Price:%d\n",i,equipments[i].name,equipments[i].atk,equipments[i].matk,equipments[i].P_Def,equipments[i].M_Def,equipments[i].price);
+	while(t==0){
+	invalid_shop:	scanf("%d",&j);
+		for(i=0;i<38;i++){
+			if(j==equipments[i].ID&&equip_num+item_num<=max_item&&dust>=equipments[i].price){
+			
+			dust-=items[i].price;
+			 printf("你購買了 %s.\n",items[i].name);
+			 equ_in_bag[equip_num]=equipments[j];
+			 equip_num++;
+		}
+			else if(j==equipments[i].ID&&equip_num+item_num>max_item){
+				equipments[59]=equipments[j];
+				dust-=equipments[i].price;
+				tt=1;
+				item_drop();
+			}
+			else if(j>36){
+				printf("沒有這個商品！\n");
+				goto invalid_shop;
+			}
+			else if(j==0){
+			 t=1;
+					}
+			else{
+				printf("你沒有足夠的塵！\n");
+				break;
+			}
+	}
+}
+printf("hope to see you soon.\n");
+}
+
+void town_print(){
+	system("cls");
+	status_print();
+	printf("你人在塔外的一座村莊裡，村莊雖然荒涼，但至少你還是能夠進行補給。\n");
+	printf("在村莊裡，你能夠看到的人有這些......\n(1)道具商人\n(2)裝備商人\n(3)村長\n(4)離開村莊，入塔\n");
+}
+
+
+void town_action(){
+	int choose=0;
+	scanf("%d",&choose);
+	
+	if(choose==1){
+		system("cls");
+		seller_of_potion();
+	}
+	else if(choose==2){
+		system("cls");
+		seller_of_equipment();
+		
+	}
+	else if(choose==3){
+		leader_of_village();
+	}
+	else{
+		system("cls");
+		printf("你進入了塔中......\n");
+		system("pause");
+		in_town=0; 
+		system("cls");
+	}
+}
+
+void leader_of_village(void){  
+	static int leader_of_village_open=0; //村長開場白 只跑一次的判定
+	if(leader_of_village_open<1){ //讓開場白只跑一次 
+		printf("村長：歡迎來到村莊！我是這裡的村長。");
+		leader_of_village_open=1;
+	}
+	else{
+		printf("村長：你好。");
+	}
+	system("pause");	
 }

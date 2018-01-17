@@ -3,6 +3,7 @@
 #include <math.h>
 #include <time.h>
 #include <stdbool.h>
+#include <memory.h>
 #define max_length_of_name 50
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
@@ -15,7 +16,7 @@ static int buff_def_count=0,debuff_atk_count=0,debuff_poison_count=0,battle_dist
 
 static	char player_name[15];
 
-static int player_position=8,pres_player_position=8,tower_level=0,kill_num=0,max_item=7,equip_num=0,item_num=0;
+static int player_position=8,pres_player_position=8,tower_level=0,kill_num=0,max_item=7,equip_num=0,item_num=0,item_created=0;
 
 static bool battling=false,just_up=false,player_ability[6],tower_monster_living[100][9],in_town=true;
 
@@ -65,7 +66,7 @@ struct info  //建立結構
 }monster[40],nowmonster1,pres_monster1;
 	
 	void skill1(){
-		int i=rand()%20+150,cri=rand()%100+1;
+		int i=rand()%20+200,cri=rand()%100+1;
 		
 		i=(player_status[3]*i/100)-nowmonster1.P_def;
 		
@@ -85,7 +86,7 @@ struct info  //建立結構
 	}
 	void skill2(){
 		
-		int i=rand()%15+100;
+		int i=rand()%15+135;
 		
 		i=(player_status[3]*i/100)-nowmonster1.P_def;
 		
@@ -104,7 +105,7 @@ struct info  //建立結構
 	}
 	void skill3(){
 		
-		int i=rand()%30+100;
+		int i=rand()%30+120;
 		
 		i=player_status[3]*i/100;
 		
@@ -116,7 +117,7 @@ struct info  //建立結構
 		
 		int i=rand()%5+2;
 		
-		i=dust/100*i;
+		i=dust/20*i;
 		
 		nowmonster1.HP-=i;
 		
@@ -126,9 +127,9 @@ struct info  //建立結構
 	}
 	void skill5(){
 		
-		int i=rand()%100+8;
+		int i=rand()%100+1;
 		
-		if(i<=5){
+		if(i<=9){
 			
 			nowmonster1.HP=0;
 			
@@ -142,7 +143,7 @@ struct info  //建立結構
 	}
 	void skill6(){
 		
-		int i=rand()%25+85,cri=rand()%100-34;
+		int i=rand()%25+85,cri=rand()%100-54;
 		
 		i=(player_status[3]*i-nowmonster1.P_def)/100;
 		
@@ -315,7 +316,11 @@ struct info  //建立結構
 	}
 	void item8()//飛刀 
 	{
-		int i=50*player_status[3]/100-nowmonster1.P_def;
+		int i=130*player_status[3]/100-nowmonster1.P_def;
+		
+		if(i<0){
+			i=0;
+		}
 		
 		nowmonster1.HP-=i;
 		
@@ -323,7 +328,11 @@ struct info  //建立結構
 	}
 	void item9()//手裏劍 
 	{
-		int i=70*player_status[3]/100-nowmonster1.P_def;
+		int i=200*player_status[3]/100-nowmonster1.P_def;
+		
+		if(i<0){
+			i=0;
+		}
 		
 		nowmonster1.HP-=i;
 		
@@ -331,7 +340,11 @@ struct info  //建立結構
 	}
 	void item10()//爆破炸彈 
 	{
-		int i=100*player_status[3]/100;
+		int i=350*player_status[3]/100;
+		
+		if(i<0){
+			i=0;
+		}
 		
 		nowmonster1.HP-=i;
 		
@@ -339,7 +352,7 @@ struct info  //建立結構
 	}
 	void item11()//卷軸<米吉多> 
 	{
-		int i=50*player_status[5]/100-nowmonster1.M_def;
+		int i=130*player_status[5]/100-nowmonster1.M_def;
 		
 		nowmonster1.HP-=i;
 		
@@ -347,7 +360,7 @@ struct info  //建立結構
 	}
 	void item12()//卷軸<米吉多拉> 
 	{
-		int i=70*player_status[5]/100-nowmonster1.M_def;
+		int i=200*player_status[5]/100-nowmonster1.M_def;
 		
 		nowmonster1.HP-=i;
 		
@@ -355,7 +368,7 @@ struct info  //建立結構
 	}
 	void item13()//卷軸<米吉多拉翁> 
 	{
-		int i=100*player_status[5]/100;
+		int i=350*player_status[5]/100;
 		
 		nowmonster1.HP-=i;
 		
@@ -363,7 +376,7 @@ struct info  //建立結構
 	}
 	void item14()//卷軸<煙幕> 
 	{
-		player_position=pres_player_position;
+					player_position=pres_player_position;
 					
 					printf("釋放 %s !!你逃走了！\n",items[14].name);
 					
@@ -438,7 +451,7 @@ int main(int argc, char *argv[]) {
     
     FILE *fp = fopen("savedata/scores.txt", "a+");
 			time_t  timer = time(NULL);
-			fprintf(fp,"\t%15s score = %d\tv1.6\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2+dust/100,ctime(&timer));
+			fprintf(fp,"\t%15s score = %d\tv1.62\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2+dust/100,ctime(&timer));
     		fclose(fp);
     
     system("pause");
@@ -855,6 +868,8 @@ void map_print(){//塗地圖
 						equipments[59].speed=itemcreate[0].speed;
 						equipments[59].distance=itemcreate[0].distance;
 						printf("你找到了 %s ！\n",equipments[59].name);
+						item_created++;
+						equipments[59].ID=item_created+50;
 					if(equip_num+item_num<max_item){
 					equipments[59].have=1;
 					equ_in_bag[equip_num]=equipments[59];
@@ -870,12 +885,19 @@ void map_print(){//塗地圖
 					trea=rand()%15+1;
 					items[50]=items[trea];
 					printf("你找到了 %s ！\n",items[50].name);
-					if(equip_num+item_num<max_item||items[trea].have==1){
-						int amount=item_inbag[item_num].amount;
+					if(equip_num+item_num<max_item){
+						int count=0,bb=0;
+						while(count<item_num){
+							if(item_inbag[count].ID==items[50].ID){
+								item_inbag[count].amount++;bb=1;
+							}
+							count++;
+						}
+						if(bb!=1){
 						item_inbag[item_num]=items[50];
-						item_inbag[item_num].amount=amount+1;
-						items[trea].have=1;
+						item_inbag[item_num].amount++;
 						item_num++;
+						}
 					}
 					else{
 						printf("你找到了 %s ！但你的背包已經裝不下了，請選擇要丟棄的物品。\n ",items[50].name);
@@ -998,7 +1020,7 @@ void monster_creat(){
         	
         	while(a<9){
         		
-        		tower_monster[i][a]=ceil((rand()%16+1)*(i+1)/30)+1;
+        		tower_monster[i][a]=ceil((rand()%16+1)*(i+1)/24)+1;
         		
         		if(tower_monster[i][a]>16){
         			tower_monster[i][a]=16;
@@ -1227,6 +1249,9 @@ void battle(){
 				printf("============\n  TURN %d\n============\n",turn);
 							item_call[(item_inbag[item_choose-1].ID)-1]();
 							item_inbag[item_choose-1].amount-=1;
+							if(battling==false){
+								break;
+							}
 						}
 						else if(items[item_inbag[item_choose-1].ID-1].type!=3&&item_inbag[item_choose-1].amount<1){
 							system("cls");map_print();
@@ -1587,6 +1612,10 @@ void buff_print(){
 	
 void monster_command(){
 	nowmonster1=monster[tower_monster[tower_level][player_position-1]];
+	nowmonster1.HP+=nowmonster1.HP*tower_level/20;
+	nowmonster1.ATK+=nowmonster1.ATK*tower_level/50;
+	nowmonster1.P_def+=nowmonster1.P_def*tower_level/35;
+	nowmonster1.M_def+=nowmonster1.M_def*tower_level/35;
 	
 	if(player_ability[1]==true){
 		printf("你看到 %s (HP=%d) 在房間裡，要怎麼做？\n(1)戰鬥\n(2)潛行\n(3)返回\n",nowmonster1.name,nowmonster1.HP);
@@ -1654,7 +1683,7 @@ void monster_command(){
 }
 	void item_command(){
 		char input[2]={'0'};
-		invalid_command: printf("要做什麼？\n(0)取消\n");
+		invalid_command: printf("(0)取消\n要做什麼？\n");
 		scanf("%s",&input[0]);
 		int choose=atoi(input);
 		if(choose==0){
@@ -1747,6 +1776,17 @@ void item_drop(){
 					printf("你放棄了撿取\n");
 				}
 				else if(choose<=equip_num+item_num){
+					int count=0;
+					while(count<6){
+						if(equ_weared[count].ID==equ_in_bag[choose-1].ID){
+				player_status[3]-=equ_weared[count].atk;
+				player_status[5]-=equ_weared[count].matk;
+				player_status[4]-=equ_weared[count].P_Def;
+				player_status[6]-=equ_weared[count].M_Def;
+							equ_weared[count]=equipments[58];
+						}
+						count++;
+					}
 					if(choose<=equip_num&&tt==1){
 						equ_in_bag[choose-1]=equipments[59];
 					}
@@ -1766,6 +1806,7 @@ void item_drop(){
 						int i=choose-equip_num-1;
 						while(i<item_num){
 							item_inbag[i]=item_inbag[i+1];
+							i++;
 						}
 						item_num--;
 						equip_num++;
@@ -1790,13 +1831,16 @@ void seller_of_potion(){
 	printf("請盡情挑選!!\t\t\t\t\t\t\t\t持有塵： %d\n輸入你想要的道具的數字(0離開)\n",dust);
 		while(t==0){
 		invalid_shop: scanf("%d",&j);
-		for(i=1;i<15;i++){
+		for(i=1;i<15;i++){int bb=0;
 			if(j==items[i].ID&&equip_num+item_num<=max_item&&dust>=items[i].price){
 				int k;
 				for(k=0;k<item_num;k++){
 					if(j==item_inbag[k].ID){
-						item_inbag[k].amount++;
+						item_inbag[k].amount++;bb=1;
 					}
+				}
+				if(bb!=0){
+					item_inbag[item_num]=items[k];
 				}
 			dust-=items[i].price;
 			 printf("你購買了 %s.\n",items[i].name);
@@ -1874,6 +1918,7 @@ void seller_of_equipment(){int i = 0, j = 0;
         }
     }
 for(i=1;i<37;i++)
+printf("請盡情挑選!!\t\t\t\t\t\t\t\t持有塵： %d\n輸入你想要的裝備的數字(0離開)\n",dust);
 		printf("%-2d: %-20s A=%2d   MA=%2d   Def=%2d   MRes=%2d   Price:%d\n",i,equipments[i].name,equipments[i].atk,equipments[i].matk,equipments[i].P_Def,equipments[i].M_Def,equipments[i].price);
 	while(t==0){
 	invalid_shop:	scanf("%d",&j);
@@ -1947,7 +1992,23 @@ void leader_of_village(void){
 		leader_of_village_open=1;
 	}
 	else{
-		printf("村長：你好。");
+	int a;
+	a=(rand() % 5) +1;
+	if(a==1){
+		printf("村長：你好啊，朋友。\n");
+	}
+	else if(a==2){
+		printf("村長：準備去冒險了嗎？\n");
+	}
+	else if(a==3){
+		printf("村長：可以不要只玩五分鐘嗎。\n");
+	}
+	else if(a==4){
+		printf("村長：雖然我已經六十多歲，但我至今，仍是處男。\n");
+	}
+	else if(a==5){
+		printf("村長：上任當村長，得先巧立名目，拉攏豪紳，繳稅捐款...\n");
+	}
 	}
 	system("pause");	
 }

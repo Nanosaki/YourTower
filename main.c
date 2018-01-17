@@ -570,7 +570,6 @@ void player_creat(){
 
 
 void tower_creat(){
-	
 	int i=0,y=0,randnum=0;
 	
 	while(i<100){
@@ -579,7 +578,7 @@ void tower_creat(){
 		
 		while(y<9){
 		
-		tower[i][y]=(rand()%6)+1;
+		tower[i][y]=rand()%5+1;
 		
 		tower_road[i][y]=(rand()%3)+1;
 		
@@ -885,14 +884,14 @@ void map_print(){//塗地圖
 					trea=rand()%15+1;
 					items[50]=items[trea];
 					printf("你找到了 %s ！\n",items[50].name);
-					if(equip_num+item_num<max_item){
-						int count=0,bb=0;
+					int count=0,bb=0;
 						while(count<item_num){
 							if(item_inbag[count].ID==items[50].ID){
 								item_inbag[count].amount++;bb=1;
 							}
 							count++;
 						}
+					if(equip_num+item_num<max_item||bb==1){
 						if(bb!=1){
 						item_inbag[item_num]=items[50];
 						item_inbag[item_num].amount++;
@@ -1551,7 +1550,7 @@ void equipments_load(){
        }
        while (a==0) //開始一行一行往下，從檔案讀進info字串 
 		{
-            while(fgets(temp, sizeof(temp), fp) && i<42)  //當讀到第random行時，要指定怪的話就改成ID+1(跳過標題標示) 
+            while(fgets(temp, sizeof(temp), fp) && i<38)  //當讀到第random行時，要指定怪的話就改成ID+1(跳過標題標示) 
             {
 				sscanf(temp,"%d,%d,%d,%d,%d,%d,%d,%d,%[^\n]",&equipments[i-1].ID,&equipments[i-1].P_Def,&equipments[i-1].M_Def,&equipments[i-1].atk,&equipments[i-1].matk,&equipments[i-1].type,&equipments[i-1].distance,&equipments[i-1].price,equipments[i-1].name);  
 				i++;
@@ -1572,7 +1571,7 @@ void item_load(){
        }
        while (a==0) //開始一行一行往下，從檔案讀進info字串 
 		{
-            while(fgets(temp, sizeof(temp), fp) && i<20)  //當讀到第random行時，要指定怪的話就改成ID+1(跳過標題標示) 
+            while(fgets(temp, sizeof(temp), fp) && i<17)  //當讀到第random行時，要指定怪的話就改成ID+1(跳過標題標示) 
             {
 				sscanf(temp,"%d,%d,%[^,\n],%[^,\n],%d",&items[i-1].ID,&items[i-1].type,items[i-1].name,items[i-1].description,&items[i-1].price);  
 				i++;
@@ -1688,6 +1687,7 @@ void monster_command(){
 		int choose=atoi(input);
 		if(choose==0){
 			printf("你闔上了背包\n");
+			system("pause");
 		}
 		else if(choose<=equip_num){
 				player_status[3]-=equ_weared[equ_in_bag[choose-1].type-1].atk;
@@ -1754,7 +1754,7 @@ void material_load(){
 	}
 void item_drop(){
 				int item_print=0,choose=0;
-				printf("(0) ");
+				printf("(0)");
 				if(tt==1){
 				printf("%-15s (A= %-2d MA= %-2d Def= %-2d MRes= %-2d Range= %d)\n",equipments[59].name,equipments[59].atk,equipments[59].matk,equipments[59].P_Def,equipments[59].M_Def,equipments[59].distance);	
 				}
@@ -1918,9 +1918,9 @@ void seller_of_equipment(){int i = 0, j = 0;
         }
     }
 for(i=1;i<37;i++)
-printf("請盡情挑選!!\t\t\t\t\t\t\t\t持有塵： %d\n輸入你想要的裝備的數字(0離開)\n",dust);
+
 		printf("%-2d: %-20s A=%2d   MA=%2d   Def=%2d   MRes=%2d   Price:%d\n",i,equipments[i].name,equipments[i].atk,equipments[i].matk,equipments[i].P_Def,equipments[i].M_Def,equipments[i].price);
-	while(t==0){
+	while(t==0){printf("請盡情挑選!!\t\t\t\t\t\t\t\t持有塵： %d\n輸入你想要的裝備的數字(0離開)\n",dust);
 	invalid_shop:	scanf("%d",&j);
 		for(i=0;i<38;i++){
 			if(j==equipments[i].ID&&equip_num+item_num<=max_item&&dust>=equipments[i].price){
@@ -1956,13 +1956,13 @@ void town_print(){
 	system("cls");
 	status_print();
 	printf("你人在塔外的一座村莊裡，村莊雖然荒涼，但至少你還是能夠進行補給。\n");
-	printf("在村莊裡，你能夠看到的人有這些......\n(1)道具商人\n(2)裝備商人\n(3)村長\n(4)離開村莊，入塔\n");
+	printf("在村莊裡，你能夠看到的人有這些......\n(1)道具商人\n(2)裝備商人\n(3)村長\n(4)離開村莊，冒險\n");
 }
 
 
 void town_action(){
 	int choose=0;
-	scanf("%d",&choose);
+	invalid_command: scanf("%d",&choose);
 	
 	if(choose==1){
 		system("cls");
@@ -1976,12 +1976,16 @@ void town_action(){
 	else if(choose==3){
 		leader_of_village();
 	}
-	else{
+	else if(choose==4){
 		system("cls");
 		printf("你進入了塔中......\n");
 		system("pause");
 		in_town=0; 
 		system("cls");
+	}
+	else{
+		printf("無效指令\n");
+		goto invalid_command;
 	}
 }
 

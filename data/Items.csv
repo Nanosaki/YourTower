@@ -1,16 +1,16 @@
 id,type,name,description,pirce
-1,1,Potion,Restores HP,10
-2,1,Mid-Potion,Restores more HP,20
-3,1,Hi-Potion,Restores a lot of HP,30
-4,1,Ether,Restores MP,40
-5,1,Mid-Ether,Restores more MP,50
-6,1,Hi-Ether,Restores a lot of MP,60
-7,1,Love letter from a girl,Fully restores HP and MP,70
-8,2,Flying Knife,Inflicts little physics damage to one foe,80
-9,2,Shuriken,Inflicts medium physics damage to one foe,90
-10,2,Demolition Bomb,Inflicts high physics damage to one foe,100
-11,2,"Scroll""Megido""",Inflicts little magic damage to one foe,110
-12,2,"Scroll""Megidola""",Inflicts medium magic damage to one foe,120
-13,2,"Scroll""Megidolaon""",Inflicts high magic damage to one foe,130
-14,2,"Scroll""Smokescreen""",100% Escapes from battle,140
-15,3,"Scroll""Teleport""",Escapes from dungeon,150
+1,1,香蕉<小>,回復HP,10
+2,1,香蕉<中>,中幅回復HP,20
+3,1,香蕉<大>,大幅回復HP,30
+4,1,海水<小>,回復MP,40
+5,1,海水<中>,中幅回復MP,50
+6,1,海水<大>,大幅回復MP,60
+7,1,從某人收到的情書,完全回復HP及MP,70
+8,2,飛刀,造成物理傷害,80
+9,2,手裏劍,造成中幅物理傷害,90
+10,2,爆破炸彈,造成大幅物理傷害,100
+11,2,卷軸<米吉多>,造成魔法傷害,110
+12,2,卷軸<米吉多拉>,造成中幅魔法傷害,120
+13,2,卷軸<米吉多拉翁>,造成大幅魔法傷害,130
+14,2,卷軸<煙幕>,100%逃離戰鬥(只能在戰鬥中使用),140
+15,3,卷軸<傳送>,離開迷宮(只能在非戰鬥中使用),150

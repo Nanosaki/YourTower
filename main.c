@@ -7,15 +7,15 @@
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
-static	int tower[100][9],tower_road[100][9],tower_monster[100][9];//tower[層數][房間編號]存房間類型  tower_road存通道 player_ability存天賦 
+static	int tower[100][9],tower_road[100][9],tower_monster[100][9],tower_situa[100][9];//tower[層數][房間編號]存房間類型  tower_road存通道 player_ability存天賦 
 	
 static	int player_status[15]={1,100,50,30,10,20,10,7,50,0,100,50,2,100},pres_player_status[15]={1,100,50,30,10,20,10,7,50,0,100,50},skillnum=0,dust=0;//player_Status={0Level,1HP,2MP,3Atk,4def,5Matk,6Mdef,7Critical,8Rstealth,9EXP
 						//				10MHP,11MMP,12range,13speed}
-static int buff_def_count=0,debuff_atk_count=0,debuff_poison_count=0,battle_distance=3,amount_of_equipments=40;
+static int buff_def_count=0,debuff_atk_count=0,debuff_poison_count=0,battle_distance=3,amount_of_equipments=40,tt=0;
 
 static	char player_name[15];
 
-static int player_position=8,pres_player_position=8,tower_level=0,kill_num=0,max_item=0;
+static int player_position=8,pres_player_position=8,tower_level=0,kill_num=0,max_item=7,equip_num=0,item_num=0;
 
 static bool battling=false,just_up=false,player_ability[6],tower_monster_living[100][9];
 
@@ -23,9 +23,24 @@ void leader_of_village(void);
 void teleporter(void);
 void seller_of_potion(void);
 void seller_of_equipment(void);
-
+struct itemcreate  //建立結構 
+{
+	int A1,MA1,D1,MR1,A2,MA2,D2,MR2,A3,MA3,D3,MR3,type,distance,speed;
+	char material[100],set[100],armor[100];
+	bool obtained;
+}itemcreate[50];
+struct item{
+	int type; //
+	char name[max_length_of_name]; //道具名稱 
+	char description[max_length_of_name]; 
+	int ID; //道具ID 
+	int price;
+	int amount; // 
+	bool have; //是否擁有 
+	bool used_in_battle;  
+}items[40],item_inbag[10];
 struct armor{
-	int P_Def,distance; //物防 
+	int P_Def,distance,speed; //物防 
 	int M_Def; //魔防
 	int atk; //血量 
 	int matk,type; //魔力 
@@ -34,7 +49,7 @@ struct armor{
 	int price;
 	bool have; //是否擁有裝備 
 	bool is_weared; //是否穿戴裝備 
-}equipments[60],equ_in_bag[7],equ_weared[5];
+}equipments[60],equ_in_bag[10],equ_weared[5];
 
 struct skillinfo  //建立結構 
 {
@@ -222,12 +237,153 @@ struct info  //建立結構
 	void (*skill_call[12])()={skill1,skill2,skill3,skill4,skill5,skill6,skill7,skill8,skill9,skill10,skill11,skill12};	
    
 
+    void item1()//香蕉<小> 
+	{ 
+		int i=player_status[10]*0.15;
+		
+	
+		if(i>player_status[10]-player_status[1]){
+			i=player_status[10]-player_status[1];
+		}
+		player_status[1]+=i;
+		
+		printf("使用 %s !!你回復了 %d 點血量!\n",items[1].name,i);
+	}
+	void item2()//香蕉<中>
+	{ 
+		int i=player_status[10]*0.25; 
+		
+		if(i>player_status[10]-player_status[1]){
+			i=player_status[10]-player_status[1];
+		}
+		player_status[1]+=i;
+		
+		printf("使用 %s !!你回復了 %d 點血量!\n",items[2].name,i);
+		
+		
+	}
+	void item3()//香蕉<大>
+	{	int i=player_status[10]*0.5;
+		
+		if(i>player_status[10]-player_status[1]){
+			i=player_status[10]-player_status[1];
+		}
+		player_status[1]+=i;
+		
+		printf("使用 %s !!你回復了 %d 點血量!\n",items[3].name,i);
+	}
+	void item4()//海水<小> 
+	{
+		int i=player_status[11]*0.2;
+		
+		if(i>player_status[11]-player_status[2]){
+			i=player_status[11]-player_status[2];
+		}
+		player_status[2]+=i;
+		
+		printf("使用 %s !!你回復了 %d 點魔力!\n",items[4].name,i);
+	}
+    void item5()//海水<中>
+	{
+		int i=player_status[11]*0.4;
+		if(i>player_status[11]-player_status[2]){
+			i=player_status[11]-player_status[2];
+		}
+		player_status[2]+=i;
+		
+		printf("使用 %s !!你回復了 %d 點魔力!\n",items[5].name,i);
+		}
+	void item6()//海水<大>
+	{
+		int i=player_status[11]*0.6;
+		if(i>player_status[11]-player_status[2]){
+			i=player_status[11]-player_status[2];
+		}
+		player_status[2]+=i;
+		
+		printf("使用 %s !!你回復了 %d 點魔力!\n",items[6].name,i);
+	}
+	void item7()//某人的情書 
+	{
+		
+		player_status[1]=player_status[10];
+		player_status[2]=player_status[11];
+		
+		printf("愛情帶給了你力量!血量與魔力完全恢復了!\n");
+		
+		
+	}
+	void item8()//飛刀 
+	{
+		int i=50*player_status[3]/100-nowmonster1.P_def;
+		
+		nowmonster1.HP-=i;
+		
+		printf("丟出 %s !!你對敵人造成 %d 點傷害!\n",items[8].name,i);
+	}
+	void item9()//手裏劍 
+	{
+		int i=70*player_status[3]/100-nowmonster1.P_def;
+		
+		nowmonster1.HP-=i;
+		
+		printf("擲出 %s !!你對敵人造成 %d 點傷害!\n",items[9].name,i);
+	}
+	void item10()//爆破炸彈 
+	{
+		int i=100*player_status[3]/100;
+		
+		nowmonster1.HP-=i;
+		
+		printf("投擲 %s !!你對敵人造成 %d 點傷害!\n",items[10].name,i);
+	}
+	void item11()//卷軸<米吉多> 
+	{
+		int i=50*player_status[5]/100-nowmonster1.M_def;
+		
+		nowmonster1.HP-=i;
+		
+		printf("釋放 %s !!你對敵人造成 %d 點傷害!\n",items[11].name,i);
+	}
+	void item12()//卷軸<米吉多拉> 
+	{
+		int i=70*player_status[5]/100-nowmonster1.M_def;
+		
+		nowmonster1.HP-=i;
+		
+		printf("釋放 %s !!你對敵人造成 %d 點傷害!\n",items[12].name,i);
+	}
+	void item13()//卷軸<米吉多拉翁> 
+	{
+		int i=100*player_status[5]/100;
+		
+		nowmonster1.HP-=i;
+		
+		printf("釋放 %s !!你對敵人造成 %d 點傷害!\n",items[13].name,i);
+	}
+	void item14()//卷軸<煙幕> 
+	{
+		player_position=pres_player_position;
+					
+					printf("釋放 %s !!你逃走了！\n",items[14].name);
+					
+					battling=false;
+
+	}
+	void item15()//卷軸<傳送> 
+	{
+		
+		printf("釋放 %s !!你離開了迷宮\n",items[15].name);
+	}
+	void (*item_call[15])()={item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,item11,item12,item13,item14,item15};	
 	
 int main(int argc, char *argv[]) {
 	
 	srand(time(NULL));
 	
-	player_creat();
+	material_load();
+	
+	item_load();
 	
 	skill_load();
 	
@@ -236,6 +392,8 @@ int main(int argc, char *argv[]) {
 	monster_creat();
 	
     tower_creat();
+    
+    player_creat();
     
     system("cls");
     
@@ -270,7 +428,7 @@ int main(int argc, char *argv[]) {
     
     FILE *fp = fopen("savedata/scores.txt", "a+");
 			time_t  timer = time(NULL);
-			fprintf(fp,"\t%15s score = %d\tv1.5\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2+dust/100,ctime(&timer));
+			fprintf(fp,"\t%15s score = %d\tv1.56\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2+dust/100,ctime(&timer));
     		fclose(fp);
     
     system("pause");
@@ -291,7 +449,7 @@ void player_creat(){
 	
 	while(point>0){
 	
-	printf("請選擇天賦( %dleft):\n(1)怪力 (你天生神力，開場即會使用重斬)\n(2)鷹眼 (你目光如炬，可以輕易看破怪物的狀態)\n(3)輕靈 (你身輕如燕，躲過怪物的眼睛輕而易舉)\n(4)技能78\n(5)火之子 (你是火的孩子！開場即會使用火球術)\n(6)赫爾魯斯之血 (你繼承了傳說中的血統，當你受傷時會逐漸回復)\n",point);
+	printf("請選擇天賦( %dleft):\n(1)怪力 (你天生神力，開場即會使用重斬)\n(2)鷹眼 (你目光如炬，可以輕易看破怪物的狀態)\n(3)輕靈 (你身輕如燕，躲過怪物的眼睛輕而易舉)\n(4)收藏家 (你擅長收納，能比別人攜帶更多物品)\n(5)火之子 (你是火的孩子！開場即會使用火球術)\n(6)赫爾魯斯之血 (你繼承了傳說中的血統，當你受傷時會逐漸回復)\n",point);
 	
 	unability: scanf("%s",&choose);
 
@@ -313,9 +471,7 @@ void player_creat(){
 			break;
 		}
 		case '4':{
-			skill[12].learned=true;
-			skill[9].learned=true;
-			
+			max_item+=3;
 			break;
 		}
 		case '5':{
@@ -403,6 +559,8 @@ void tower_creat(){
 		tower[i][y]=(rand()%6)+1;
 		
 		tower_road[i][y]=(rand()%3)+1;
+		
+		tower_situa[i][y]=(rand()%4)+1;
 		
 		if(tower[i][y]>2){
 			tower_monster_living[i][y]=true;
@@ -645,11 +803,78 @@ void map_print(){//塗地圖
 			}
 			case 'o':{
 				if(tower[tower_level][player_position-1]==4){
-					int trea=rand()%37+2;
-					printf("你找到了 %s ！\n",equipments[trea].name);
-					equipments[trea].have=1;
-					equ_in_bag[max_item]=equipments[trea];
-					max_item++;
+					int trea=rand()%5+1;
+					if(trea<3){//裝備生成 
+					trea=rand()%29+1;
+					itemcreate[0]=itemcreate[trea];
+					
+					if(itemcreate[0].type==5){
+						trea=rand()%20+1;
+					}
+					else{
+						trea=rand()%29+8;
+					}
+						strcpy(itemcreate[0].material,itemcreate[trea].material);
+						itemcreate[0].A1=itemcreate[trea].A1;
+						itemcreate[0].D1=itemcreate[trea].D1;
+						itemcreate[0].MA1=itemcreate[trea].MA1;
+						itemcreate[0].MR1=itemcreate[trea].MR1;
+						trea=rand()%29+1;
+						strcpy(itemcreate[0].set,itemcreate[trea].set);
+						itemcreate[0].A2=itemcreate[trea].A2;
+						itemcreate[0].D2=itemcreate[trea].D2;
+						itemcreate[0].MA2=itemcreate[trea].MA2;
+						itemcreate[0].MR2=itemcreate[trea].MR2;		
+						strcpy(equipments[59].name,"");
+						strcat(equipments[59].name,itemcreate[0].material);
+						strcat(equipments[59].name,itemcreate[0].set);
+						strcat(equipments[59].name,itemcreate[0].armor);
+						trea=(rand()%4)*itemcreate[0].A1;
+						int A2=(rand()%4)*itemcreate[0].A2,A3=(rand()%4)*itemcreate[0].A3;
+						equipments[59].atk=trea+A2+A3;
+						trea=(rand()%4)*itemcreate[0].MA1;
+						A2=(rand()%4)*itemcreate[0].MA2,A3=(rand()%4)*itemcreate[0].MA3;
+						equipments[59].matk=trea+A2+A3;
+						trea=(rand()%4)*itemcreate[0].D1;
+						A2=(rand()%4)*itemcreate[0].D2,A3=(rand()%4)*itemcreate[0].D3;
+						equipments[59].P_Def=trea+A2+A3;
+						trea=(rand()%4)*itemcreate[0].MR1;
+						A2=(rand()%4)*itemcreate[0].MR2,A3=(rand()%4)*itemcreate[0].MR3;
+						equipments[59].M_Def=trea+A2+A3;
+						equipments[59].type=itemcreate[0].type;
+						equipments[59].speed=itemcreate[0].speed;
+						equipments[59].distance=itemcreate[0].distance;
+						printf("你找到了 %s ！\n",equipments[59].name);
+					if(equip_num+item_num<max_item){
+					equipments[59].have=1;
+					equ_in_bag[equip_num]=equipments[59];
+					equip_num++;
+					}
+					else{
+						printf("你的背包滿了！請選擇要丟棄的東西！\n");
+						tt=1;
+						item_drop(tt);
+					}
+					}
+					else{//道具生成 
+					trea=rand()%15+1;
+					items[50]=items[trea];
+					printf("你找到了 %s ！\n",items[50].name);
+					if(equip_num+item_num<max_item||items[trea].have==1){
+						int amount=item_inbag[item_num].amount;
+						item_inbag[item_num]=items[50];
+						item_inbag[item_num].amount=amount+1;
+						items[trea].have=1;
+						item_num++;
+					}
+					else{
+						printf("你找到了 %s ！但你的背包已經裝不下了，請選擇要丟棄的物品。\n ",items[50].name);
+						tt=2;
+						item_drop(tt);
+					} 
+					}
+					
+					
 					tower[tower_level][player_position-1]=-1;
 					system("pause");
 				}
@@ -661,9 +886,13 @@ void map_print(){//塗地圖
 			}
 			case 'i':{
 				int item_print=0;
-				printf("背包欄位： %d / 7\n",max_item);
-				while(item_print<max_item){
-					printf("(%d) %s (A= %d MA= %d Def= %d MRes= %d Range= %d)\n",item_print+1,equ_in_bag[item_print].name,equ_in_bag[item_print].atk,equ_in_bag[item_print].matk,equ_in_bag[item_print].P_Def,equ_in_bag[item_print].M_Def,equ_in_bag[item_print].distance);
+				printf("背包欄位： %d / %d\n",equip_num+item_num,max_item);
+				while(item_print<equip_num){
+					printf("(%d) %8s (A= %2d MA= %2d Def= %2d MRes= %2d Range= %d)\n",item_print+1,equ_in_bag[item_print].name,equ_in_bag[item_print].atk,equ_in_bag[item_print].matk,equ_in_bag[item_print].P_Def,equ_in_bag[item_print].M_Def,equ_in_bag[item_print].distance);
+					item_print++;
+				}
+				while(item_print<equip_num+item_num){
+					printf("(%d) %8s %15s 剩餘 %d 個\n",item_print+1,item_inbag[item_print-equip_num].name,item_inbag[item_print-equip_num].description,item_inbag[item_print-equip_num].amount);
 					item_print++;
 				}
 				item_command();
@@ -688,19 +917,37 @@ void situation_print(){
 	}
 	else if(tower[tower_level][player_position-1]==2){
 		
-		printf("空氣中飄著陳腐的味道......是書！這裡是書房！\n");
+		if(tower_situa[tower_level][player_position-1]==1){
+			printf("空氣中飄著陳腐的味道......是書！這裡是書房！\n");
+		}
+		else if(tower_situa[tower_level][player_position-1]==2){
+			printf("到處都是散落的紙本，你撿起一看，歪曲的文字似乎表示著這裡的歷史\n");
+		}
+		else{
+			printf("寒冷的風撲鼻而來，你不禁打了個噴嚏\n");
+		}
 		
 	}else if(tower[tower_level][player_position-1]==3){
-		
-		printf("房間的中央矗立著不祥的雕像，你盯著他，感覺自己快要發狂\n");
-		
+		if(tower_situa[tower_level][player_position-1]==1){
+			printf("房間的中央矗立著不祥的雕像，你盯著他，感覺自己快要發狂\n");
+		}else if(tower_situa[tower_level][player_position-1]==2){
+			printf("地上的打鬥痕跡，空氣中瀰漫著金屬的臭味，是血！這裡一定發生過激烈的戰鬥！\n");
+		}else{
+			printf("不明的壓迫感襲向胸口，這裡的重力似乎比平常還強，連移動一步都要多花力氣\n");
+		}
 	}else if(tower[tower_level][player_position-1]==4){
 		
 		printf("寶物庫！你的辛苦總算有了代價！\n在房間的角落有一個沒開過的寶箱\n");
 		
 	}else if(tower[tower_level][player_position-1]==5){
-		
+		if(tower_situa[tower_level][player_position-1]==1){
 		printf("很香的味道......這裡應該是廚房。\n你不由自主地偷看了一下大釜中的食物......噁，是人肉！\n");
+		}else if(tower_situa[tower_level][player_position-1]==2){
+			printf("皮膚感到一陣黏膩，一陣悶熱撲來，你感到如身處雨林般的不適\n");
+		}else{
+			printf("牆上歪歪扭扭的寫著某些字「獻祭…讚美東…」似乎不去深思比較好\n");
+		}
+		
 		
 	}
 	else {
@@ -803,7 +1050,7 @@ void battle(){
 		while(i==0){
 		
 			if(player_speed>=monster_speed && player_speed>=100){
-			battle_map();printf("============\n  TURN %d\n============\n",turn);invalid_command: printf("你的回合！要怎麼做？\n(k)攻擊\n(s)技能選單\n(w)原地等待\n(r)逃跑\n(4)拉開距離\n(6)拉近距離\n");
+			battle_map();printf("============\n  TURN %d\n============\n",turn);invalid_command: printf("你的回合！要怎麼做？\n(k)攻擊\n(s)技能選單\n(i)道具選單\n(w)原地等待\n(r)逃跑\n(4)拉開距離\n(6)拉近距離\n");
 		
 		 scanf("%s",&command[0]);
 			
@@ -869,7 +1116,7 @@ void battle(){
 					
 				if(skill[id].learned==true){
 						
-					printf("(%d) %s───  %s (消費MP=%d) (射程=%d)\n",count+1,skill[id+1].name,skill[id+1].description,skill[id+1].MP,skill[id+1].distance);
+					printf("(%d) %6s───  %15s (消費MP=%2d) (射程=%d)\n",count+1,skill[id+1].name,skill[id+1].description,skill[id+1].MP,skill[id+1].distance);
 					
 					which_skills[count]=id+1;
 					count++;
@@ -946,6 +1193,47 @@ void battle(){
 						printf("你跟怪物已經離的夠遠了\n");
 						goto invalid_command;
 					}
+				}
+				else if(command[0]=='i'){
+					if(item_num==0){
+						printf("你沒有任何道具！\n");
+						goto invalid_command;
+					}
+					else{
+					printf("用哪個道具？\n");
+					int item_print=0;
+					while(item_print<item_num){
+					printf("(%d) %8s %15s 剩餘 %d 個\n",item_print+1,item_inbag[item_print].name,item_inbag[item_print].description,item_inbag[item_print].amount);
+					item_print++;}
+					printf("(b)取消\n");
+					scanf("%s",command);
+					if(command[0]=='b'){
+						goto invalid_command;
+					}
+					int item_choose=atoi(command);
+						if(items[item_inbag[item_choose-1].ID-1].type!=3&&item_inbag[item_choose-1].amount>0){
+							system("cls");map_print();
+				status_print();
+				printf("============\n  TURN %d\n============\n",turn);
+							item_call[(item_inbag[item_choose-1].ID)-1]();
+							item_inbag[item_choose-1].amount-=1;
+						}
+						else if(items[item_inbag[item_choose-1].ID-1].type!=3&&item_inbag[item_choose-1].amount<1){
+							system("cls");map_print();
+				status_print();
+				printf("============\n  TURN %d\n============\n",turn);
+							printf("你沒有這個道具了！\n");
+							goto invalid_command;
+						}
+						else{
+							system("cls");map_print();
+				status_print();
+				printf("============\n  TURN %d\n============\n",turn);
+							printf("這個道具不能在戰鬥中使用！\n");
+							goto invalid_command;
+						}	
+					}
+					
 				}
 				else{printf("無效指令！\n");goto invalid_command;
 				}
@@ -1160,7 +1448,7 @@ void battle(){
 		int i=0;
 		while(i<3){
 			if(skill[random].learned==false){
-			printf("(%d)%s─── %s (MP消耗=%d) (射程=%d)\n",i+1,skill[random].name,skill[random].description,skill[random].MP,skill[random].distance);
+			printf("(%d)%8s─── %15s (MP消耗=%2d) (射程=%d)\n",i+1,skill[random].name,skill[random].description,skill[random].MP,skill[random].distance);
 			which_skill[i]=skill[random].ID;
 			i++;
 			}
@@ -1235,9 +1523,29 @@ void equipments_load(){
 			}
 			a++;
         }
-     
         fclose(fp);
-	}
+        
+	}  
+void item_load(){
+	int i=1,a=0;
+	char temp[250];
+		
+	FILE *fp;
+		if( ( fp = fopen( "data/items.csv", "r")) == NULL) //沒找到檔案就結束 
+       {
+              puts("Cannot open the file");
+       }
+       while (a==0) //開始一行一行往下，從檔案讀進info字串 
+		{
+            while(fgets(temp, sizeof(temp), fp) && i<20)  //當讀到第random行時，要指定怪的話就改成ID+1(跳過標題標示) 
+            {
+				sscanf(temp,"%d,%d,%[^,\n],%[^,\n],%d",&items[i-1].ID,&items[i-1].type,items[i-1].name,items[i-1].description,&items[i-1].price);  
+				i++;
+			}
+			a++;
+        }
+        fclose(fp);		
+}
 void equipment_display(void){
 	int i;
 	int num;
@@ -1346,10 +1654,13 @@ void monster_command(){
 }
 	void item_command(){
 		char input[2]={'0'};
-		invalid_command: printf("要做什麼？\n");
+		invalid_command: printf("要做什麼？\n(0)取消\n");
 		scanf("%s",&input[0]);
 		int choose=atoi(input);
-		if(choose<=max_item){
+		if(choose==0){
+			printf("你闔上了背包\n");
+		}
+		else if(choose<=equip_num){
 				player_status[3]-=equ_weared[equ_in_bag[choose-1].type-1].atk;
 				player_status[5]-=equ_weared[equ_in_bag[choose-1].type-1].matk;
 				player_status[4]-=equ_weared[equ_in_bag[choose-1].type-1].P_Def;
@@ -1366,9 +1677,106 @@ void monster_command(){
 			}
 			system("pause");
 		}
+		else if(choose>equip_num&&choose<=equip_num+item_num){
+			if(item_inbag[choose-equip_num-1].type!=2 &&item_inbag[choose-equip_num-1].amount>0){
+				item_call[(item_inbag[choose-equip_num-1].ID)-1]();
+				item_inbag[choose-equip_num-1].amount-=1;
+				system("pause");
+			}
+			else if(item_inbag[choose-equip_num-1].type!=2 &&item_inbag[choose-equip_num-1].amount>0){
+				printf("你這個道具已經用完了！\n");
+				goto invalid_command;
+			}
+			else{
+				printf("你不能在非戰鬥中使用這個物品！\n");
+				goto invalid_command;
+			}
+		}
 		else{
 			printf("你沒有這個物品！\n");
 			goto invalid_command;
 			
 		}
 	}
+	
+void material_load(){
+		int i=2,a=0;
+	char temp[100];
+	FILE *fp;
+
+       if( ( fp = fopen( "data/material.csv", "r")) == NULL) //沒找到檔案就結束 
+       {
+              puts("Cannot open the file");
+       }
+       
+       while (a==0) //開始一行一行往下，從檔案讀進info字串 
+		{
+            
+            while(fgets(temp, sizeof(temp), fp) && i<32)  //當讀到第random行時，要指定怪的話就改成ID+1(跳過標題標示) 
+            {
+				sscanf(temp,"%[^,],%d,%d,%d,%d,%[^,],%d,%d,%d,%d,%[^,],%d,%d,%d,%d,%d,%d,%d",itemcreate[i-2].material,&itemcreate[i-2].A1,&itemcreate[i-2].MA1,&itemcreate[i-2].D1,&itemcreate[i-2].MR1,itemcreate[i-2].set,&itemcreate[i-2].A2,&itemcreate[i-2].MA2,&itemcreate[i-2].D2,&itemcreate[i-2].MR2,itemcreate[i-2].armor,&itemcreate[i-2].A3,&itemcreate[i-2].MA3,&itemcreate[i-2].D3,&itemcreate[i-2].MR3,&itemcreate[i-2].type,&itemcreate[i-2].distance,&itemcreate[i-2].speed);  
+                i++;
+                
+				//使用isscanf將info字串內的東西格式化(類似分割)，並依序存入結構 
+			}
+			a++;
+        }
+        fclose(fp);
+	}
+void item_drop(){
+				int item_print=0,choose=0;
+				printf("(0) ");
+				if(tt==1){
+				printf("%8s (A= %2d MA= %2d Def= %2d MRes= %2d Range= %d)\n",equipments[59].name,equipments[59].atk,equipments[59].matk,equipments[59].P_Def,equipments[59].M_Def,equipments[59].distance);	
+				}
+				else{
+				printf("%8s %15s \n",items[50].name,items[50].description);	
+				}
+				
+				while(item_print<equip_num){
+					printf("(%d) %8s (A= %2d MA= %2d Def= %2d MRes= %2d Range= %d)\n",item_print+1,equ_in_bag[item_print].name,equ_in_bag[item_print].atk,equ_in_bag[item_print].matk,equ_in_bag[item_print].P_Def,equ_in_bag[item_print].M_Def,equ_in_bag[item_print].distance);
+					item_print++;
+				}
+				while(item_print<equip_num+item_num){
+					printf("(%d) %8s %15s 剩餘 %d 個\n",item_print+1,item_inbag[item_print-equip_num].name,item_inbag[item_print-equip_num].description,item_inbag[item_print-equip_num].amount);
+					item_print++;
+				}
+				invalid_command: scanf("%d",&choose);
+				
+				if(choose==0){
+					printf("你放棄了撿取\n");
+				}
+				else if(choose<=equip_num+item_num){
+					if(choose<=equip_num&&tt==1){
+						equ_in_bag[choose-1]=equipments[59];
+					}
+					else if(choose<=equip_num&&tt==2){
+						int i=choose-1;
+						while(i<=equip_num){
+							equ_in_bag[i]=equ_in_bag[i+1];
+							i++;
+						}
+						item_inbag[item_num+1]=items[50];
+						item_inbag[item_num+1].amount++;
+						item_num++;
+						equip_num--;	
+					}
+					else if(choose>equip_num&&tt==1){
+						equ_in_bag[equip_num+1]=equipments[59];
+						int i=choose-equip_num-1;
+						while(i<=item_num){
+							item_inbag[i]=item_inbag[i+1];
+						}
+						item_num--;
+						equip_num++;
+					}
+					else{
+						item_inbag[choose-equip_num-1]=items[50];
+						item_inbag[choose-equip_num-1].amount++;
+					}
+				}
+				else{
+					printf("無效指令！\n");
+					goto invalid_command;
+				}
+}

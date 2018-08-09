@@ -12,7 +12,7 @@ static	int tower[100][9],tower_road[100][9],tower_monster[100][9],tower_situa[10
 	
 static	int player_status[15]={1,100,50,30,10,20,10,7,50,0,100,50,2,100},pres_player_status[15]={1,100,50,30,10,20,10,7,50,0,100,50},skillnum=0,dust=0;//player_Status={0Level,1HP,2MP,3Atk,4def,5Matk,6Mdef,7Critical,8Rstealth,9EXP
 						//				10MHP,11MMP,12range,13speed}
-static int buff_def_count=0,debuff_atk_count=0,debuff_poison_count=0,battle_distance=3,amount_of_equipments=40,tt=0;
+static int buff_def_count=0,debuff_atk_count=0,debuff_poison_count=0,player_debuff_speed=0,battle_distance=3,amount_of_equipments=40,tt=0;
 
 static	char player_name[15];
 
@@ -61,7 +61,7 @@ struct skillinfo  //建立結構
 
 struct info  //建立結構 
 {
-	int HP,ATK,P_def,M_def,ID,attack_type,attack_distance,speed;
+	int HP,ATK,P_def,M_def,ID,attack_type,attack_distance,speed,skilltype;
 	char name[100];
 }monster[40],nowmonster1,pres_monster1;
 	
@@ -391,6 +391,43 @@ struct info  //建立結構
 	}
 	void (*item_call[15])()={item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,item11,item12,item13,item14,item15};	
 	
+	void monskill1(){
+		int chance=rand()%100+1;
+		if(chance<=25){
+			printf("怪物使用了成長！你感覺牠更有壓迫了！\n");
+			nowmonster1.attack_distance++;
+			nowmonster1.speed+=5;
+		}
+		else{
+			printf("怪物似乎想要做些什麼，但是失敗了！\n");
+		}
+	}
+	void monskill2(){
+		nowmonster1.HP+=(pres_monster1.HP-nowmonster1.HP)/2;
+		printf("怪物使用了加固！牠似乎得到了休息！\n");
+	}
+	void monskill3(){
+		if(player_debuff_speed==0){
+			
+		pres_player_status[13]=player_status[13];
+		
+		player_status[13]-=(7+player_status[0]);
+		}
+
+		printf("怪物伸出了牠的觸手......你現在必須得注意這些東西，你的動作變得遲疑了！\n");
+		player_debuff_speed=2;
+	}
+	void monskill4(){
+		nowmonster1.ATK+=5;
+		printf("怪物變的狂暴了......小心！\n");
+	}
+	void monskill5(){
+		player_status[4]--;
+		player_status[6]--;
+		printf("怪物使用了死之觸！你被詛咒了！耐性永久下降\n");
+	}
+	void (*monskill_call[5])()={monskill1,monskill2,monskill3,monskill4,monskill5};
+	
 int main(int argc, char *argv[]) {
 	
 	srand(time(NULL));
@@ -451,7 +488,7 @@ int main(int argc, char *argv[]) {
     
     FILE *fp = fopen("savedata/scores.txt", "a+");
 			time_t  timer = time(NULL);
-			fprintf(fp,"\t%15s score = %d\tv1.62\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2+dust/100,ctime(&timer));
+			fprintf(fp,"\t%15s score = %d\tv1.7\t%s\n\n",player_name,tower_level*10+player_status[0]*5+kill_num*2+dust/100,ctime(&timer));
     		fclose(fp);
     
     system("pause");
@@ -1006,7 +1043,7 @@ void monster_creat(){
             
             while(fgets(info, sizeof(info), fp) && i<20)  //當讀到第random行時，要指定怪的話就改成ID+1(跳過標題標示) 
             {
-				sscanf(info,"%d,%d,%d,%d,%d,%d,%d,%d,%[^\n]",&monster[i-2].ID,&monster[i-2].HP,&monster[i-2].ATK,&monster[i-2].P_def,&monster[i-2].M_def,&monster[i-2].attack_type,&monster[i-2].attack_distance,&monster[i-2].speed,&monster[i-2].name);  
+				sscanf(info,"%d,%d,%d,%d,%d,%d,%d,%d,%d,%[^\n]",&monster[i-2].ID,&monster[i-2].HP,&monster[i-2].ATK,&monster[i-2].P_def,&monster[i-2].M_def,&monster[i-2].attack_type,&monster[i-2].attack_distance,&monster[i-2].speed,&monster[i-2].skilltype,&monster[i-2].name);  
                 i++;
 			}
 			a++;
@@ -1299,7 +1336,9 @@ void battle(){
 			i++;
 			debuff_poison_count=0;
 			debuff_atk_count=0;
+			player_debuff_speed=0;
 			buff_def_count=0;
+			buff_print();
 			kill_num++;
 		}
 		if(player_status[1]<=0){
@@ -1323,9 +1362,15 @@ void battle(){
 		}
 	
 	void monster_action(){
-		if(nowmonster1.attack_distance>=battle_distance){
-			
+		
 			int monster_choose=rand()%100+1;
+		if(monster_choose>70){
+				monskill_call[(nowmonster1.skilltype)-1]();
+			}
+		else if(nowmonster1.attack_distance>=battle_distance){
+			
+		
+			
 			
 			if(nowmonster1.attack_distance>player_status[12] && monster_choose<=30*(nowmonster1.attack_distance-player_status[12])){
 				battle_distance++;
@@ -1602,6 +1647,16 @@ void buff_print(){
 		printf("你變得比以前更堅韌，還剩 %d 回合！\n",buff_def_count);
 	}
 			}
+	if(player_debuff_speed!=0){
+			player_debuff_speed--;
+			if(player_debuff_speed==0){
+				player_status[13]=pres_player_status[13];
+				printf("怪物將牠那褻瀆的肢體收了回去，你的動作回復正常了！\n");
+			}
+	}
+	else{
+		printf("你正為了防備那些觸手而步步維艱，還剩 %d 回合！\n",player_debuff_speed);
+	}
 	
 	
 	
@@ -1630,6 +1685,7 @@ void monster_command(){
 		case '1':{
 			battling=true;
 			system("cls");
+			battle_distance=player_status[12];
 			battle();
 			break;
 		}
@@ -1649,6 +1705,7 @@ void monster_command(){
 				system("pause");
 				system("cls");
 				if(player_status[1]!=0){
+				battle_distance=nowmonster1.attack_distance;
 				battling=true;
 				battle();	
 				}
